@@ -1,19 +1,22 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import DrawerLayout from "./components/DrawerLayout";
-import { NavigationContainer } from '@react-navigation/native';
-import Notification from "./Screens/Notification";
-
+import {StyleSheet} from 'react-native';
+import { enableScreens } from 'react-native-screens';
 import {createDrawerNavigator} from "@react-navigation/drawer";
+
+//Screens
 import HomePage from "./Screens/HomePage";
+import Notification from "./Screens/Notification";
 import LDH from "./Screens/LDH";
 import MesPref from "./Screens/MesPref";
 import APropos from "./Screens/APropos";
+
 const Drawer = createDrawerNavigator();
+enableScreens();
+
 const DrawerNavigation = () => {
     return (
         <Drawer.Navigator initialRouteName='HomePage'>
-            <Drawer.Screen name='Acceuil' component={HomePage}/>
+            <Drawer.Screen name='Acceuil' component={HomePage} options={{headerTitle:'',headerTransparent: true}}/>
             <Drawer.Screen name='List des habitants' component={LDH}/>
             <Drawer.Screen name='Notification' component={Notification}/>
             <Drawer.Screen name='Mes préférences' component={MesPref}/>
