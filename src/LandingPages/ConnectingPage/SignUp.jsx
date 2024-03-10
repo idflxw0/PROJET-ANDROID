@@ -100,7 +100,7 @@ const SignUpScreen = ({ navigation }) => {
                     console.log('User signed up:', user);
                 });*/
                 // Navigate to the "Home" screen
-                navigation.navigate('HomeScreen');
+                navigation.navigate('Home');
             })
             .catch((error) => {
                 // There was an error signing up the user
