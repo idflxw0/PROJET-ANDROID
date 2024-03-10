@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
+// @ts-ignore
 const Header = ({title,navigation}) => {
     const handleBackPress = () => {
         navigation.goBack();
@@ -18,7 +19,7 @@ const styles = StyleSheet.create({
     backIconContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        // marginTop: 10,
+        marginTop: '-5%',
         alignSelf: 'flex-start',
         marginVertical: 16,
         marginLeft: '2%',
