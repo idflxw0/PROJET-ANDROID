@@ -5,7 +5,6 @@ import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
 import { auth,createUser } from '../../config/firebase';
-
 // import {storeUserSession} from "../../../../hook/authSession";
 import {log} from "expo/build/devtools/logger";
 import Header from "../../components/Header";
@@ -100,7 +99,10 @@ const SignUpScreen = ({ navigation }) => {
                     console.log('User signed up:', user);
                 });*/
                 // Navigate to the "Home" screen
-                navigation.navigate('Home');
+                setTimeout(() => {
+                    console.log("this is a navigation state : " + navigation.getState());
+                    navigation.navigate('Home');
+                }, 100);
             })
             .catch((error) => {
                 // There was an error signing up the user

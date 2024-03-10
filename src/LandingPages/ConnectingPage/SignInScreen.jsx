@@ -17,7 +17,9 @@ const SignInScreen = ({ navigation }) => {
     const handleSignIn = () => {
     loginUser(auth, email, password)
         .then((userCredential) => {
-            navigation.navigate('Home');
+            setTimeout(() => {
+                navigation.navigate('Home');
+            }, 100);
         })
         .catch((error) => {
             // There was an error signing in the user
