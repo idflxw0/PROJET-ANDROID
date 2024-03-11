@@ -13,6 +13,7 @@ import APropos from "./Screens/APropos";
 //ICONS
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Foundation } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 import {doc, getDoc} from "firebase/firestore";
 import {auth,db} from "./config/firebase";
 
@@ -22,7 +23,7 @@ enableScreens();
 
 type IconMap = {
     [key: string]: {
-        library: typeof Ionicons | typeof Foundation;
+        library: typeof Ionicons | typeof Foundation | typeof FontAwesome6;
         name: string;
     };
 };
@@ -30,7 +31,7 @@ type IconMap = {
 const ICONS_MAP: IconMap = {
     'Acceuil': { library: Ionicons, name: 'home-outline' },
     'Liste des habitants': { library: Foundation, name: 'clipboard-notes' },
-    'Mon habitat': { library: Foundation, name: 'house' },
+    'Mon habitat': { library: FontAwesome6, name: 'house-user' },
     'Notification': { library: Ionicons, name: "notifications-outline" },
     'Mes préférences': { library: Ionicons, name: 'settings' },
     'A propos': { library: Ionicons, name: 'information-circle-outline' },
@@ -46,14 +47,8 @@ const DrawerNavigation = () => {
                               swipeEnabled:false,
                           }}
         >
+
             <Drawer.Screen name='Acceuil' component={HomePage} options={{ headerTitle:'', headerTransparent: true,
-                drawerIcon:({focused,size}) => (
-                    <Foundation
-                        name='clipboard-notes'
-                        size={30}
-                        color={focused ? '#000' : '#ccc'}
-                    />
-                ),
                 drawerActiveBackgroundColor: '#4287F5',
                 drawerActiveTintColor: '#fff',
                 drawerInactiveBackgroundColor: 'transparent'}}/>
