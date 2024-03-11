@@ -6,6 +6,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import HomePage from "./Screens/HomePage";
 import Notification from "./Screens/Notification";
 import LDH from "./Screens/LDH";
+import MonHabitat from "./Screens/MonHabitat";
 import MesPref from "./Screens/MesPref";
 import APropos from "./Screens/APropos";
 
@@ -14,6 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Foundation } from '@expo/vector-icons';
 import {doc, getDoc} from "firebase/firestore";
 import {auth,db} from "./config/firebase";
+
 
 const Drawer = createDrawerNavigator();
 enableScreens();
@@ -27,7 +29,8 @@ type IconMap = {
 
 const ICONS_MAP: IconMap = {
     'Acceuil': { library: Ionicons, name: 'home-outline' },
-    'List des habitants': { library: Foundation, name: 'clipboard-notes' },
+    'Liste des habitants': { library: Foundation, name: 'clipboard-notes' },
+    'Mon habitat': { library: Foundation, name: 'house' },
     'Notification': { library: Ionicons, name: "notifications-outline" },
     'Mes préférences': { library: Ionicons, name: 'settings' },
     'A propos': { library: Ionicons, name: 'information-circle-outline' },
@@ -54,7 +57,8 @@ const DrawerNavigation = () => {
                 drawerActiveBackgroundColor: '#4287F5',
                 drawerActiveTintColor: '#fff',
                 drawerInactiveBackgroundColor: 'transparent'}}/>
-            <Drawer.Screen name='List des habitants' component={LDH} options={{ headerTitle: '',headerTransparent: true,}}/>
+            <Drawer.Screen name='Liste des habitants' component={LDH} options={{ headerTitle: '',headerTransparent: true,}}/>
+            <Drawer.Screen name='Mon habitat' component={MonHabitat} options={{ headerTitle: '',headerTransparent: true,}}/>
             <Drawer.Screen name='Notification' component={Notification} options={{headerTitle: '',headerTransparent: true, }}/>
             <Drawer.Screen name='Mes préférences' component={MesPref} options={{ headerTitle: '',headerTransparent: true, }}/>
             <Drawer.Screen name='A propos' component={APropos} options={{ headerTitle: '',headerTransparent: true, }}/>
