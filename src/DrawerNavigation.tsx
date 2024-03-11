@@ -39,11 +39,10 @@ const DrawerNavigation = () => {
                           drawerContent={(props) => <CustomDrawerContent {...props}/>}
                           screenOptions={{
                               drawerStyle: {
-                                  width: '55%',
+                                  width: '60%',
                               },
                               swipeEnabled:false,
                           }}
-
         >
             <Drawer.Screen name='Acceuil' component={HomePage} options={{ headerTitle:'', headerTransparent: true,
                 drawerIcon:({focused,size}) => (
