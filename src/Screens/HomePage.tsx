@@ -1,11 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import DatePicker from 'react-native-date-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Swipeable } from 'react-native-gesture-handler';
-const HomePage = () => {
-    
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+type RootStackParamList = {
+    Reservation: undefined; // define your navigation parameters if any
+};
+
+type Props = {
+    navigation: NavigationProp<RootStackParamList>;
+};
+
+const HomePage: React.FC<Props> = ({ navigation }) => {
+
+    const handelrNavigateToReservation = () => {
+        navigation.navigate("Reservation");
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -30,12 +42,12 @@ const HomePage = () => {
                         '2024-03-26': { selected: true, marked: true, dotColor: 'red' }
                     }}
                 />
-{/*
-                <DatePicker mode="date" date={new Date('2024-03-26')} />
-*/}
             </View>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Réserver</Text>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handelrNavigateToReservation}
+            >
+                <Text style={styles.buttonText} >Réserver</Text>
             </TouchableOpacity>
         </View>
     );
@@ -68,7 +80,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     infoText: {
-        flexWrap:'wrap',
+        flexWrap: 'wrap',
         fontSize: 16,
         color: 'black',
     },
