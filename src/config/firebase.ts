@@ -3,6 +3,7 @@ import 'firebase/firestore';
 // @ts-ignore
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import {getFirestore } from "firebase/firestore";
+
 import constants from 'expo-constants';
 import { initializeAuth } from 'firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage"
