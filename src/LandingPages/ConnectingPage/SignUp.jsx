@@ -4,10 +4,10 @@ import {FontAwesome} from '@expo/vector-icons';
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
-import { auth,createUser } from '../../config/firebase';
-// import {storeUserSession} from "../../../../hook/authSession";
-import {log} from "expo/build/devtools/logger";
 import Header from "../../components/Header";
+
+import { auth,createUser,db } from '../../config/firebase';
+import {doc, getDoc, setDoc,updateDoc,addDoc, collection} from "firebase/firestore";
 
 const SignUpScreen = ({ navigation }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -87,26 +87,28 @@ const SignUpScreen = ({ navigation }) => {
         }
     }
 
-
+    const pushToFireStore = async (data, user) => {
+        const userDocRef = doc(db, "users", user.uid); // 'users' is the collection
+        try {
+            await setDoc(userDocRef, data, { merge: true }); // 'merge: true' will update the document if it exists or create it if it does not
+            console.log('User data has been saved in Firestore');
+            navigation.navigate('Home');
+        } catch (error) {
+            console.error("Error saving user data to Firestore:", error);
+        }
+    };
     const handleSignUp = () => {
         createUser(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                /*storeUserSession({
-                    uid: user.uid,
-                    email: user.email,
-                }).then(()=>{
-                    console.log('User signed up:', user);
-                });*/
-                // Navigate to the "Home" screen
-                setTimeout(() => {
-                    console.log("this is a navigation state : " + navigation.getState());
+                pushToFireStore({ name: name }, user).then(() => {
+                    console.log('User data has been saved');
                     navigation.navigate('Home');
-                }, 100);
+                }).catch((error) => {
+                    console.error("Error saving user data to Firestore:", error);
+                });
             })
             .catch((error) => {
-                // There was an error signing up the user
-                console.log(email);
                 console.error('Error signing up:', error);
             });
     };

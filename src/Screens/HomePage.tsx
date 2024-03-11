@@ -5,7 +5,6 @@ import DatePicker from 'react-native-date-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Swipeable } from 'react-native-gesture-handler';
 const HomePage = () => {
-    
     return (
         <View style={styles.container}>
             <View style={styles.header}>

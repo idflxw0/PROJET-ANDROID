@@ -4,7 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from
 import Header from '../../components/Header';
 import CustomButton from "../../components/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
-import { auth,loginUser } from '../../config/firebase';
+import { auth,loginUser,db} from '../../config/firebase';
+
 const SignInScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

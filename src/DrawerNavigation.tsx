@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image, TouchableOpacity,StyleSheet} from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem,DrawerContentComponentProps  } from '@react-navigation/drawer';
@@ -12,6 +12,8 @@ import APropos from "./Screens/APropos";
 //ICONS
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Foundation } from '@expo/vector-icons';
+import {doc, getDoc} from "firebase/firestore";
+import {auth,db} from "./config/firebase";
 
 const Drawer = createDrawerNavigator();
 enableScreens();
@@ -29,10 +31,7 @@ const ICONS_MAP: IconMap = {
     'Notification': { library: Ionicons, name: "notifications-outline" },
     'Mes préférences': { library: Ionicons, name: 'settings' },
     'A propos': { library: Ionicons, name: 'information-circle-outline' },
-    // Add more mappings for other routes
 };
-
-
 const DrawerNavigation = () => {
     return (
         <Drawer.Navigator initialRouteName='Acceuil'
@@ -66,11 +65,32 @@ const DrawerNavigation = () => {
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const { state, navigation } = props;
     const focusedRouteName = state.routes[state.index].name;
+    const [userName, setUserName] = useState('');
+    useEffect(() => {
+        const fetchUserName = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                try {
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        setUserName(userDoc.data().name);
+                    } else {
+                        console.log("No such document!");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            }
+        };
+        fetchUserName();
+    }, []);
+
     return (
         <DrawerContentScrollView {...props}>
             <View style={styles.drawerHeader}>
                 <Image source={require('../assets/PP.jpg')} style={styles.profileImage} />
-                <Text style={styles.profileName}>Jean Prunot</Text>
+                <Text style={styles.profileName}>{userName}</Text>
             </View>
             {state.routes.map((route, index) => {
                 const isFocused = focusedRouteName === route.name;
