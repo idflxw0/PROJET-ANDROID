@@ -36,10 +36,10 @@ const DrawerNavigation = () => {
                 drawerActiveTintColor: '#fff',
                 drawerInactiveBackgroundColor: 'transparent'}}
             />
-            <Drawer.Screen name='List des habitants' component={LDH}/>
-            <Drawer.Screen name='Notification' component={Notification}/>
-            <Drawer.Screen name='Mes préférences' component={MesPref}/>
-            <Drawer.Screen name='A propos' component={APropos}/>
+            <Drawer.Screen name='List des habitants' component={LDH} options={{ headerShown: false }}/>
+            <Drawer.Screen name='Notification' component={Notification} options={{ headerShown: false }}/>
+            <Drawer.Screen name='Mes préférences' component={MesPref} options={{ headerShown: false }}/>
+            <Drawer.Screen name='A propos' component={APropos} options={{ headerShown: false }}/>
         </Drawer.Navigator>
     );
 };
