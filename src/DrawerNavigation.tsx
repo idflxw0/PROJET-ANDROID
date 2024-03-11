@@ -91,6 +91,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         ]}>
                             {IconComponent && (
                                 <IconComponent
+                                    //@ts-ignore
                                     name={iconName}
                                     size={30}
                                     color={isFocused ? '#000' : '#ccc'}
