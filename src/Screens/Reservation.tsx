@@ -6,15 +6,8 @@ import React from "react";
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 const powerImage = require('../../assets/power.png');
 
-type RootStackParamList = {
-    Reservation: undefined; // define your navigation parameters if any
-};
 
-type Props = {
-    navigation: NavigationProp<RootStackParamList>;
-};
-
-const Reservation: React.FC<Props> = ({navigation: navigation}) => {
+const Reservation = ({navigation}) => {
 
     const HanderNavigateToConfirmationPage = () => {
         navigation.navigate("Reservation");
