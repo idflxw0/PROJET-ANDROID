@@ -7,6 +7,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 const powerImage = require('../../assets/power.png');
 
 
+// @ts-ignore
 const Reservation = ({navigation}) => {
 
     const HanderNavigateToConfirmationPage = () => {
