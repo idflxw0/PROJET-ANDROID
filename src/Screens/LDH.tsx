@@ -1,40 +1,33 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { useUserProfile } from "../hook/useUserProfile ";
-
+import { Swipeable } from 'react-native-gesture-handler';
 
 type RootStackParamList = {
-    Reservation: undefined; // définissez vos paramètres de navigation si nécessaire
+    Reservation: undefined; // define your navigation parameters if any
 };
 
 type Props = {
     navigation: NavigationProp<RootStackParamList>;
 };
 
-const LDH: React.FC<Props> = ({ navigation }) => {
-    // @ts-ignore
-    const [userName, setUserName] = useState('');
-    // @ts-ignore
-    const { userProfile, refreshUserProfile } = useUserProfile();
-    useEffect(() => {
-        refreshUserProfile(); // Rafraîchir les données utilisateur lors du montage du composant
-    }, []); // Utilisez un tableau vide pour n'exécuter qu'une seule fois lors du montage initial
+const HomePage: React.FC<Props> = ({ navigation }) => {
 
+    const handelrNavigateToReservation = () => {
+        navigation.navigate("Reservation");
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.profileName}>{userProfile.name}</Text>
             <View style={styles.header}>
                 <Text style={styles.title}>Liste des habitats</Text>
                 <View style={styles.cardContainer}>
                     <View style={styles.statCard}>
                         <Icon name="people-outline" size={30} color="#000" />
-                        <Text style={styles.statLabel}>Résidents</Text>
-                        <View style={styles.bubble}>
-                            <Text style={styles.userName}>{userProfile ? userProfile.name : 'Loading...'}</Text>
-         Ò               </View>
+                        <Text style={styles.statLabel}>Nombre de résidents</Text>
+                        <Text style={styles.statValue}>102</Text>
                     </View>
 
                     <View style={styles.statCard}>
@@ -58,7 +51,10 @@ const LDH: React.FC<Props> = ({ navigation }) => {
                     </View>
                 </View>
             </View>
+
         </View>
+
+
     );
 };
 
@@ -82,10 +78,40 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         color: '#006400',
     },
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
+        marginBottom: 20,
+    },
+    infoText: {
+        flexWrap: 'wrap',
+        fontSize: 16,
+        color: 'black',
+    },
+    calendar: {
+        // Style your calendar component
+        padding: 20,
+        borderRadius: 10,
+        backgroundColor: '#FFFFFF',
+    },
+    button: {
+        backgroundColor: '#006400',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 24,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
     cardContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         padding: 5,
+
     },
     statCard: {
         alignItems: 'center',
@@ -104,22 +130,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
     },
-    bubble: {
-        backgroundColor: 'white',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        elevation: 2, // Ajoute une ombre
-    },
-    userName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    profileName: {
-        marginLeft: 10,
-        fontWeight: 'bold',
-    },
 });
 
-export default LDH;
+export default HomePage;
