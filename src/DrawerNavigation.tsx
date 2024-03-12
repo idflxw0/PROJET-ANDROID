@@ -16,6 +16,7 @@ import { Foundation } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import {doc, getDoc} from "firebase/firestore";
 import {auth,db} from "./config/firebase";
+import {useUserProfile} from "./hook/useUserProfile ";
 
 
 const Drawer = createDrawerNavigator();
@@ -27,10 +28,7 @@ type IconMap = {
         name: string;
     };
 };
-interface UserProfile {
-    name: string;
-    profilePicture?: string; // The '?' makes this property optional
-}
+
 
 const ICONS_MAP: IconMap = {
     'Acceuil': { library: Ionicons, name: 'home-outline' },
@@ -69,57 +67,23 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const { state, navigation } = props;
     const focusedRouteName = state.routes[state.index].name;
     const [userName, setUserName] = useState('');
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
-
-    useEffect(() => {
-        const fetchUserName = async () => {
-            const user = auth.currentUser;
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                try {
-                    const userDoc = await getDoc(userDocRef);
-                    if (userDoc.exists()) {
-                        setUserName(userDoc.data().name);
-                    } else {
-                        console.log("No such document!");
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                }
-            }
-        };
-        fetchUserName();
-    }, []);
-
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
-    const fetchUserProfile = async () => {
-        const user = auth.currentUser;
-        if (user) {
-            const userDocRef = doc(db, "users", user.uid);
-            try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    setUserProfile(docSnap.data() as UserProfile); // Cast to UserProfile
-                } else {
-                    console.log("No such document!");
-                }
-            } catch (error) {
-                console.error("Error fetching user profile:", error);
-            }
-        }
-    };
+    const userProfile = useUserProfile();
 
 
     return (
         <DrawerContentScrollView {...props}>
             <View style={styles.drawerHeader}>
-                <Image
-                    source={userProfile && userProfile.profilePicture ? { uri: userProfile.profilePicture } : require('../assets/PP.jpg')}
-                    style={styles.profileImage} />
-                <Text style={styles.profileName}>{userName}</Text>
+                {userProfile ? (
+                    <>
+                        <Image
+                            source={{ uri: userProfile.profilePicture || 'default_image_uri_here' }}
+                            style={styles.profileImage}
+                        />
+                        <Text style={styles.profileName}>{userProfile.name}</Text>
+                    </>
+                ) : (
+                    <Text>Loading profile...</Text> // Placeholder text while userProfile is null
+                )}
             </View>
             {state.routes.map((route, index) => {
                 const isFocused = focusedRouteName === route.name;
