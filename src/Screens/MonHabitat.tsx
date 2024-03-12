@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Button, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { auth, db } from '../config/firebase'; // Ensure these are correctly imported
+import { collection, addDoc,query, where, getDocs  } from 'firebase/firestore';
+
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
 type NavigationProp = StackNavigationProp<any>;
 
-type Equipment = { id: string; nom: string; image: string | null; puissance: number; };
+type Equipment = { id: number; nom: string; image: string | null; puissance: number; };
 const coins = 100;
 const equipmentImages: { [key: string]: any } = {
     'Aspirateur': require('../../assets/aspirateur.png'),
@@ -17,11 +20,30 @@ const equipmentImages: { [key: string]: any } = {
 const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [newEquipment, setNewEquipment] = useState<Equipment>({ id: '', nom: '', image: null, puissance: 0 });
+    const [newEquipment, setNewEquipment] = useState<Equipment>({ id: 0, nom: '', image: null, puissance: 0 });
 
 
+    useEffect(() => {
+        const fetchEquipmentData = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const equipmentQuery = query(collection(db, "users", user.uid, "equipments"));
+                try {
+                    const querySnapshot = await getDocs(equipmentQuery);
+                    const fetchedEquipment = querySnapshot.docs.map(doc => ({
+                        ...doc.data() as Equipment
+                    }));
+                    setEquipmentData(fetchedEquipment);
+                } catch (error) {
+                    console.error("Error fetching equipment data:", error);
+                }
+            }
+        };
 
-    const addEquipment = () => {
+        fetchEquipmentData();
+    }, []);
+
+    const addEquipment =async  () => {
         if (!newEquipment.image) {
             alert('Veuillez selecter un équipement');
             return;
@@ -30,9 +52,34 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
             alert('La puissance doit être un nombre ou être différente de zéro');
             return;
         }
-        const id = (equipmentData.length + 1).toString(); // Generate a unique ID
-        setEquipmentData([...equipmentData, { ...newEquipment, id }]);
-        setNewEquipment({ id: '', nom: '', image: null, puissance: 0 });
+        const id = equipmentData.length + 1;
+        console.log(newEquipment)
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                const docRef = await addDoc(collection(db, "users", user.uid, "equipments"), {
+                    ...newEquipment,
+                    userId: user.uid,
+                });
+
+                setEquipmentData(prevEquipmentData => [
+                    ...prevEquipmentData,
+                    {
+                        ...newEquipment,
+                        id: id,
+                    },
+                ]);
+
+                alert('Équipement ajouté avec succès.');
+            } else {
+                alert('No authenticated user found.');
+            }
+        } catch (error) {
+            console.error("Error adding equipment to Firestore:", error);
+            alert('Erreur lors de l’ajout de l’équipement à Firestore.');
+        }
+
+        setNewEquipment({ id: 0, nom: '', image: null, puissance: 0 });
         setModalVisible(false);
     };
 

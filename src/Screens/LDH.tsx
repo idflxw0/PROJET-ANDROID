@@ -5,15 +5,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 
-type RootStackParamList = {
-    Reservation: undefined; // define your navigation parameters if any
-};
-
-type Props = {
-    navigation: NavigationProp<RootStackParamList>;
-};
-
-const HomePage: React.FC<Props> = ({ navigation }) => {
+//@ts-ignore
+const HomePage = ({ navigation }) => {
 
     const handelrNavigateToReservation = () => {
         navigation.navigate("Reservation");
