@@ -27,6 +27,10 @@ type IconMap = {
         name: string;
     };
 };
+interface UserProfile {
+    name: string;
+    profilePicture?: string; // The '?' makes this property optional
+}
 
 const ICONS_MAP: IconMap = {
     'Acceuil': { library: Ionicons, name: 'home-outline' },
@@ -65,6 +69,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const { state, navigation } = props;
     const focusedRouteName = state.routes[state.index].name;
     const [userName, setUserName] = useState('');
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+
     useEffect(() => {
         const fetchUserName = async () => {
             const user = auth.currentUser;
@@ -85,10 +92,33 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         fetchUserName();
     }, []);
 
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+    const fetchUserProfile = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const userDocRef = doc(db, "users", user.uid);
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    setUserProfile(docSnap.data() as UserProfile); // Cast to UserProfile
+                } else {
+                    console.log("No such document!");
+                }
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+            }
+        }
+    };
+
+
     return (
         <DrawerContentScrollView {...props}>
             <View style={styles.drawerHeader}>
-                <Image source={require('../assets/PP.jpg')} style={styles.profileImage} />
+                <Image
+                    source={userProfile && userProfile.profilePicture ? { uri: userProfile.profilePicture } : require('../assets/PP.jpg')}
+                    style={styles.profileImage} />
                 <Text style={styles.profileName}>{userName}</Text>
             </View>
             {state.routes.map((route, index) => {

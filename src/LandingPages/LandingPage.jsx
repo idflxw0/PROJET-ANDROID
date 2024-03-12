@@ -26,7 +26,7 @@ const OnboardingScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor="#554F59" barStyle="light-content" />
-            <View style={{ flex: 3, marginBottom: '30%' }}>
+            <View style={{ flex: 3, marginBottom: '35%' }}>
                 <FlatList
                     data={slides}
                     renderItem={({ item,index}) => <OnboardingItem item={item}  isFirst={index === 0}/>}
@@ -47,7 +47,6 @@ const OnboardingScreen = ({ navigation }) => {
                 />
             </View>
 
-            {/* Static content */}
             <View style={styles.footer }>
                 <Paginator data={slides} scrollX={scrollX} />
                 <TouchableOpacity
@@ -82,19 +81,17 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: 0,
+        bottom: '-2.2%',
         left: 0,
         right: 0,
         alignItems: 'center',
         padding: 20,
-        marginTop: '20%',
     },
     slide: {
         width: width,
         alignItems: 'center',
         overflow: 'hidden',
     },
-
     loginButton: {
         backgroundColor: '#58BB46',
         paddingVertical: 10,
