@@ -7,21 +7,26 @@ import { doc, setDoc } from 'firebase/firestore';
 import {ImagePickerResult} from "expo-image-picker";
 import {useUserProfile} from "../hook/useUserProfile ";
 import {MaterialIcons} from "@expo/vector-icons";
+import {NavigationProp} from "@react-navigation/native";
 
 
-const MesPref = () => {
+//@ts-ignore
+const MesPref = ({navigation}) => {
     const [image, setImage] = useState<string | null>(null);
-    const userProfile = useUserProfile();
-    useEffect(() => {
-        (async () => {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Sorry, we need camera roll permissions to make this work!');
-            }
-        })();
-    }, []);
+    const { userProfile, refreshUserProfile } = useUserProfile();
+
+    const getFilePermission = async() => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!');
+            return false;
+        }
+        return true;
+    }
 
     const pickImage = async () => {
+        const hasPermission = await getFilePermission();
+        if (!hasPermission) return;
         let result: ImagePickerResult = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -31,18 +36,18 @@ const MesPref = () => {
         if (!result.canceled && result.assets && result.assets.length > 0) {
             const pickedImageUri = result.assets[0].uri;
             setImage(pickedImageUri);
-            uploadImage(pickedImageUri);
         }
 
     };
 
     const confirmUploadImage = async () => {
         if (image) {
-            uploadImage(image); // Use the stored image URI for upload
+            uploadImage(image);
         } else {
             Alert.alert("No Image Selected", "Please pick an image first.");
         }
     };
+
 
     const uploadImage = async (uri: string) => {
         const user = auth.currentUser;
@@ -58,6 +63,8 @@ const MesPref = () => {
                     const userDocRef = doc(db, "users", user.uid);
                     setDoc(userDocRef, { profilePicture: downloadURL }, { merge: true }).then(() => {
                         Alert.alert("Profile Picture Updated", "Your profile picture has been updated successfully.");
+                        setImage('');
+                        refreshUserProfile();
                     }).catch((error) => {
                         console.error("Error updating profile picture:", error);
                     });
@@ -67,6 +74,10 @@ const MesPref = () => {
             });
         }
     };
+
+    const handleNotificationNavigation = () => {
+        navigation.navigate('Notification');
+    }
 
     return (
         <View style={styles.container}>
@@ -89,8 +100,10 @@ const MesPref = () => {
                     <Text>Loading profile...</Text>
                 )}
             </View>
-            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
             <Button title="Change Profile Picture" onPress={confirmUploadImage} />
+            <TouchableOpacity style={styles.notification}>
+                <Text onPress={handleNotificationNavigation} style={styles.txtNotification}>Notifications</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -106,7 +119,7 @@ const styles = StyleSheet.create({
     Header: {
         alignItems: 'center',
         marginTop:"10%",
-        marginBottom: 20, // Space between header and the rest of the content
+        marginBottom: 20,
     },
     imageContainer: {
         position: 'relative',
@@ -115,14 +128,14 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 0,
         bottom: 0,
-        backgroundColor: '#007bff', // Bootstrap primary button color for example
+        backgroundColor: '#007bff',
         borderRadius: 20,
         padding: 8,
     },
     profileImage: {
         width: 120,
         height: 120,
-        borderRadius: 60, // Half of width/height to make it circular
+        borderRadius: 60,
         resizeMode: 'cover',
         borderWidth: 2,
         borderColor: 'white',
@@ -136,6 +149,19 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         marginBottom: 20,
+    },
+    notification: {
+        marginTop: '2%',
+        alignItems: 'center',
+        width: '50%',
+        height: '5%',
+        backgroundColor: '#fff',
+        borderRadius: 15,
+
+    },
+    txtNotification : {
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 

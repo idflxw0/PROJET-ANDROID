@@ -56,7 +56,6 @@ const DrawerNavigation = () => {
                 drawerInactiveBackgroundColor: 'transparent'}}/>
             <Drawer.Screen name='Liste des habitants' component={LDH} options={{ headerTitle: '',headerTransparent: true,}}/>
             <Drawer.Screen name='Mon habitat' component={MonHabitat} options={{ headerTitle: '',headerTransparent: true,}}/>
-            <Drawer.Screen name='Notification' component={Notification} options={{headerTitle: '',headerTransparent: true, }}/>
             <Drawer.Screen name='Mes préférences' component={MesPref} options={{ headerTitle: '',headerTransparent: true, }}/>
             <Drawer.Screen name='A propos' component={APropos} options={{ headerTitle: '',headerTransparent: true, }}/>
         </Drawer.Navigator>
@@ -67,18 +66,19 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     const { state, navigation } = props;
     const focusedRouteName = state.routes[state.index].name;
     const [userName, setUserName] = useState('');
-    const userProfile = useUserProfile();
+    const { userProfile, refreshUserProfile } = useUserProfile();
 
-
+    refreshUserProfile();
     return (
         <DrawerContentScrollView {...props}>
             <View style={styles.drawerHeader}>
                 {userProfile ? (
                     <>
                         <Image
-                            source={{ uri: userProfile.profilePicture || 'default_image_uri_here' }}
+                            source={userProfile && userProfile.profilePicture ? { uri: userProfile.profilePicture } : require('../assets/PP.jpg')}
                             style={styles.profileImage}
                         />
+
                         <Text style={styles.profileName}>{userProfile.name}</Text>
                     </>
                 ) : (
