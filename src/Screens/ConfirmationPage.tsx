@@ -1,25 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, Animated, Easing } from 'react-native';
-import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {
     navigation: any;
 };
 
 const ConfirmationPage: React.FC<Props> = ({ navigation }) => {
-    const [logo1TranslateY] = useState(new Animated.Value(-500));
-    const [logo2TranslateY] = useState(new Animated.Value(-500));
-    const [logo1TranslateX] = useState(new Animated.Value(100));
-    const [logo2TranslateX] = useState(new Animated.Value(-100));
-    const [logo1Rotate] = useState(new Animated.Value(0));
-    const [logo2Rotate] = useState(new Animated.Value(0));
 
     return (
         <View style={styles.container}>
-            <LinearGradient
-                colors={['#B7FFB1', '#FFE500']}
-                style={styles.background}
-            />
+
             <Text style={styles.heading}>
                 Votre demande a bien été prise en compte !
             </Text>

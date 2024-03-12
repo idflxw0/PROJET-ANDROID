@@ -1,17 +1,13 @@
-import react from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import Icon from "react-native-vector-icons/Ionicons";
-import React from "react";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+
 const powerImage = require('../../assets/power.png');
 
-
-// @ts-ignore
-const Reservation = ({navigation}) => {
+const Reservation = ({ navigation }: { navigation: NavigationProp }) => {
     const HanderNavigateToConfirmationPage = () => {
-        navigation.navigate("ConfirmationPage");
-    }
+        navigation.navigate('ConfirmationPage');
+    };
 
     return (
         <View style={styles.container}>
@@ -28,20 +24,20 @@ const Reservation = ({navigation}) => {
             <View style={[styles.info, styles.infoItemsqr]}>
                 <Text style={styles.infoTextsqr}>Choix d’horaires moins énergivores</Text>
             </View>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText} onPress={HanderNavigateToConfirmationPage} >Réserver</Text>
+            <TouchableOpacity style={styles.button} onPress={HanderNavigateToConfirmationPage}>
+                <Text style={styles.buttonText}>Réserver</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
-const styles =  StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#E0F2E9',
         padding: 20,
     },
-header: {
+    header: {
         alignItems: 'center',
         marginTop: 24,
         marginBottom: 20,
@@ -124,4 +120,5 @@ header: {
         fontWeight: 'bold',
     },
 });
+
 export default Reservation;
