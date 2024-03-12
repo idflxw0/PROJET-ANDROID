@@ -19,6 +19,8 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [newEquipment, setNewEquipment] = useState<Equipment>({ id: '', nom: '', image: null, puissance: 0 });
 
+
+
     const addEquipment = () => {
         if (!newEquipment.image) {
             alert('Veuillez selecter un équipement');
