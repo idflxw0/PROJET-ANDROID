@@ -101,8 +101,9 @@ const MesPref = ({navigation}) => {
                 )}
             </View>
             <Button title="Change Profile Picture" onPress={confirmUploadImage} />
-            <TouchableOpacity style={styles.notification}>
-                <Text onPress={handleNotificationNavigation} style={styles.txtNotification}>Notifications</Text>
+            <TouchableOpacity onPress={handleNotificationNavigation} style={styles.notification}>
+                <MaterialIcons name="notifications" size={24} color="black" style={styles.icon} />
+                <Text style={styles.txtNotification}>Notifications</Text>
             </TouchableOpacity>
         </View>
     );
@@ -153,15 +154,26 @@ const styles = StyleSheet.create({
     notification: {
         marginTop: '2%',
         alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
         width: '50%',
-        height: '5%',
-        backgroundColor: '#fff',
-        borderRadius: 15,
-
+        height: 50,
+        backgroundColor: '#007bff',
+        borderRadius: 25,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
-    txtNotification : {
+    txtNotification: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: '#fff',
+        marginLeft: 10,
+    },
+    icon: {
+        // You can adjust icon styles if needed
     },
 });
 

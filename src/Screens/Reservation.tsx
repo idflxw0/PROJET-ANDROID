@@ -6,9 +6,8 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 // @ts-ignore
 const Reservation = ({navigation}) => {
-
     const HanderNavigateToConfirmationPage = () => {
-        navigation.navigate("Home");
+        navigation.navigate("ConfirmationPage");
     }
 
     return (
