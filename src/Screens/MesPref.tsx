@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { auth, db } from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc } from 'firebase/firestore';
+import {doc, setDoc, updateDoc} from 'firebase/firestore';
 import {ImagePickerResult} from "expo-image-picker";
 import {useUserProfile} from "../hook/useUserProfile ";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -14,6 +14,7 @@ import {NavigationProp} from "@react-navigation/native";
 const MesPref = ({navigation}) => {
     const [image, setImage] = useState<string | null>(null);
     const { userProfile, refreshUserProfile } = useUserProfile();
+    const [newName, setNewName] = useState('');
 
     const getFilePermission = async() => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -79,6 +80,32 @@ const MesPref = ({navigation}) => {
         navigation.navigate('Notification');
     }
 
+    const handleSignOut = () => {
+        auth.signOut().then(() => {
+            navigation.navigate('LandingPage');
+        }).catch((error) => {
+            console.error("Sign out error:", error);
+        });
+    };
+
+    const handleSaveProfile = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            if (newName === '') return;
+            const userDocRef = doc(db, "users", user.uid);
+            try {
+                await updateDoc(userDocRef, {
+                    name: newName,
+                });
+                alert('Profile updated successfully');
+                refreshUserProfile()
+            } catch (error) {
+                console.error("Error updating profile:", error);
+            }
+        }
+    };
+
+
     return (
         <View style={styles.container}>
             <View style={styles.Header}>
@@ -100,10 +127,21 @@ const MesPref = ({navigation}) => {
                     <Text>Loading profile...</Text>
                 )}
             </View>
-            <Button title="Change Profile Picture" onPress={confirmUploadImage} />
             <TouchableOpacity onPress={handleNotificationNavigation} style={styles.notification}>
-                <MaterialIcons name="notifications" size={24} color="black" style={styles.icon} />
+                <MaterialIcons name="notifications" size={30} color="black" style={styles.icon} />
                 <Text style={styles.txtNotification}>Notifications</Text>
+            </TouchableOpacity>
+            <TextInput
+                style={styles.input}
+                onChangeText={setNewName}
+                value={newName}
+                placeholder="Enter New Name"
+            />
+            <TouchableOpacity style={styles.buttonModifier} onPress={handleSaveProfile}>
+                <Text style={styles.buttonModifierText}>Modifier le Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+                <Text style={styles.signOutButtonText}>Sign Out</Text>
             </TouchableOpacity>
         </View>
     );
@@ -156,10 +194,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        width: '50%',
-        height: 50,
-        backgroundColor: '#007bff',
-        borderRadius: 25,
+        width: '90%',
+        height: 60,
+        backgroundColor: '#FFF',
+        borderRadius: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -169,11 +207,70 @@ const styles = StyleSheet.create({
     txtNotification: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#000',
         marginLeft: 10,
     },
     icon: {
-        // You can adjust icon styles if needed
+       right: '150%',
+    },
+    buttonModifier: {
+        marginTop: 10,
+        backgroundColor: '#00B4D8',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 20,
+        shadowColor: '#00B4D8',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+    signOutButton: {
+        marginTop: 20,
+        backgroundColor: '#E94560',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 20,
+        shadowColor: '#E94560',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    signOutButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    buttonModifierText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center', 
+    },
+    input: {
+        height: 50,
+        width: '80%',
+        marginVertical: 15,
+        borderWidth: 0,
+        borderRadius: 25,
+        paddingHorizontal: 20,
+        fontSize: 16,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
 });
 
