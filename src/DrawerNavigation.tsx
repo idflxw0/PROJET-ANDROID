@@ -14,8 +14,6 @@ import APropos from "./Screens/APropos";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Foundation } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
-import {doc, getDoc} from "firebase/firestore";
-import {auth,db} from "./config/firebase";
 import {useUserProfile} from "./hook/useUserProfile ";
 
 
