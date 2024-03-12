@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Button, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth, db } from '../config/firebase'; // Ensure these are correctly imported
-import { collection, addDoc,query, where, getDocs  } from 'firebase/firestore';
+import { collection, addDoc,query, where, getDocs ,orderBy  } from 'firebase/firestore';
 
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
@@ -30,18 +30,25 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
                 const equipmentQuery = query(collection(db, "users", user.uid, "equipments"));
                 try {
                     const querySnapshot = await getDocs(equipmentQuery);
-                    const fetchedEquipment = querySnapshot.docs.map(doc => ({
+
+                    let fetchedEquipment = querySnapshot.docs.map(doc => ({
+                        // @ts-ignore
+                        id: doc.id,
                         ...doc.data() as Equipment
                     }));
+
+                    // Sort the equipment array by `id` in ascending order
+                    fetchedEquipment.sort((a, b) => a.id - b.id);
+
                     setEquipmentData(fetchedEquipment);
                 } catch (error) {
                     console.error("Error fetching equipment data:", error);
                 }
             }
         };
-
         fetchEquipmentData();
     }, []);
+
 
     const addEquipment =async  () => {
         if (!newEquipment.image) {
@@ -59,6 +66,7 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
             if (user) {
                 const docRef = await addDoc(collection(db, "users", user.uid, "equipments"), {
                     ...newEquipment,
+                    id: id,
                     userId: user.uid,
                 });
 
