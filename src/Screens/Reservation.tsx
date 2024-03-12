@@ -1,9 +1,10 @@
 import react from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import Icon from "react-native-vector-icons/Ionicons";
 import React from "react";
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+const powerImage = require('../../assets/power.png');
 
 type RootStackParamList = {
     Reservation: undefined; // define your navigation parameters if any
@@ -15,15 +16,28 @@ type Props = {
 
 const Reservation: React.FC<Props> = ({navigation: navigation}) => {
 
-    const HanderNavigateToHomePage = () => {
+    const HanderNavigateToConfirmationPage = () => {
         navigation.navigate("Reservation");
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Reservation</Text>
             </View>
-
+            <View style={[styles.infoItem, styles.infoItemFirst]}>
+                <Image source={powerImage} style={styles.infoImage} />
+                <View>
+                    <Text style={styles.infoText}>Pic de consommation:</Text>
+                    <Text style={styles.infoNumber}>19h-20h</Text>
+                </View>
+            </View>
+            <View style={[styles.info, styles.infoItemsqr]}>
+                <Text style={styles.infoTextsqr}>Choix d’horaires moins énergivores</Text>
+            </View>
+            <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText} onPress={HanderNavigateToConfirmationPage} >Réserver</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -46,37 +60,66 @@ header: {
         fontSize: 28,
         fontWeight: 'bold',
     },
-    cardContainer: {
+    infoItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    statCard: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 20,
         alignItems: 'center',
-        justifyContent: 'center',
-        width: '45%',
-    },
-    statLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 10,
-    },
-    statValue: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginTop: 10,
-    },
-    calendar: {
-        // Style your calendar component
-        padding: 20,
-        borderRadius: 10,
+        justifyContent: 'space-between',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 15,
+        paddingLeft: 20,
         backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 1,
+        marginTop: 30,
+    },
+    info: {
+        flexDirection: 'row',
+        alignItems: 'flex-start', // Align items to the start
+        justifyContent: 'space-between',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 15,
+        paddingLeft: 20,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 1,
+        marginTop: 30,
+    },
+    infoItemsqr: {
+        height: '50%',
+    },
+    infoText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        textAlign: 'left',
+    },
+    infoTextsqr: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        textAlign: 'center', // Align text to center
+    },
+    infoNumber: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'left',
+    },
+    infoItemFirst: {
+        marginRight: '35%', // Add right margin to the first item
+        marginLeft: '2.5%', // Add left margin to the first item
+    },
+
+    infoImage: {
+        width: 35,
+        height: 35,
+        marginRight: 10,
     },
     button: {
-        backgroundColor: '#006400',
+        backgroundColor: '#000000',
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
