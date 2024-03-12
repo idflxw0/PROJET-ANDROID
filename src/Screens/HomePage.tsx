@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     calendar: {
-        // Style your calendar component
+
         padding: 20,
         borderRadius: 10,
         backgroundColor: '#FFFFFF',
