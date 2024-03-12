@@ -1,30 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Animated, Easing } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo for vector icons
 
-type Props = {
-    navigation: any;
-};
-
-const ConfirmationPage: React.FC<Props> = ({ navigation }) => {
-
+// @ts-ignore
+const ConfirmationPage = ({ navigation }) => {
     return (
+
         <View style={styles.container}>
 
             <Text style={styles.heading}>
-                Votre demande a bien été prise en compte !
+                Votre réservation a bien été prise en compte !
             </Text>
 
-            <Text style={styles.message}>
-                Nous vous tenons informé de la situation au plus vite.
-            </Text>
-
-            <View style={styles.buttonContainer}>
-                <Button
-                    title="Retour"
-                    color="#E02A2A"
-                    onPress={() => navigation.goBack()}
-                />
+            <View style={styles.blueShadowContainer}>
+                <Ionicons name="checkmark-circle" size={150} color="#007AFF" style={styles.blueShadow} />
             </View>
+            <Text style={styles.message}>
+                Nous vous tiendrons informé de la situation au plus vite.
+            </Text>
+            <TouchableOpacity style={styles.button} onPress={navigation.goBack}>
+                <Text style={styles.buttonText}>RETOUR</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -32,48 +28,45 @@ const ConfirmationPage: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
+        backgroundColor: '#EAF6E6',
         justifyContent: 'center',
-        backgroundColor: '#E0F2E9', // Match background color
-    },
-    background: {
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: 0,
-        left: 0
+        alignItems: 'center',
     },
     heading: {
-        fontSize: 28, // Adjusted font size
+        fontSize: 35,
         textAlign: 'center',
-        paddingHorizontal: 24, // Adjusted padding
-        marginTop: 20, // Adjusted margin
+        paddingHorizontal: 50,
+        paddingVertical: 12,
+        // top: '-20%',
+    },
+    blueShadowContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    blueShadow: {
+        textShadowColor: 'rgba(0, 122, 255, 0.5)',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 10,
     },
     message: {
-        fontSize: 20, // Adjusted font size
+        fontSize: 22,
         textAlign: 'center',
-        marginVertical: 10, // Adjusted margin
-        marginHorizontal: 20, // Adjusted margin
+        marginVertical: 20,
+        marginHorizontal: 20,
         color: '#655E5E',
+        // top: '-5%'
     },
-    buttonContainer: {
-        marginTop: 20, // Adjusted margin
+    button: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        marginTop: 20,
     },
-    logo1: {
-        position: 'absolute',
-        bottom: -20, // Adjusted position
-        left: 100, // Adjusted position
-        width: 150, // Adjusted width
-        height: 100, // Adjusted height
-        resizeMode: 'contain',
-    },
-    logo2: {
-        position: 'absolute',
-        bottom: -20, // Adjusted position
-        right: 100, // Adjusted position
-        width: 150, // Adjusted width
-        height: 100, // Adjusted height
-        resizeMode: 'contain',
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 
