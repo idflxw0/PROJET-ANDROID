@@ -1,17 +1,14 @@
-import react from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import Icon from "react-native-vector-icons/Ionicons";
 import React from "react";
-import { useNavigation, NavigationProp } from '@react-navigation/native';
 const powerImage = require('../../assets/power.png');
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 
 // @ts-ignore
 const Reservation = ({navigation}) => {
 
     const HanderNavigateToConfirmationPage = () => {
-        navigation.navigate("Reservation");
+        navigation.navigate("Home");
     }
 
     return (
