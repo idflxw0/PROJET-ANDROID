@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet,Button, Image, Alert} from 'react-native';
+import {View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { auth, db } from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc } from 'firebase/firestore';
 import {ImagePickerResult} from "expo-image-picker";
+import {useUserProfile} from "../hook/useUserProfile ";
+import {MaterialIcons} from "@expo/vector-icons";
 
 
 const MesPref = () => {
     const [image, setImage] = useState<string | null>(null);
-
+    const userProfile = useUserProfile();
     useEffect(() => {
         (async () => {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -20,7 +22,6 @@ const MesPref = () => {
     }, []);
 
     const pickImage = async () => {
-        // Launch image picker
         let result: ImagePickerResult = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -69,9 +70,26 @@ const MesPref = () => {
 
     return (
         <View style={styles.container}>
-            <Text>Mes Preferences</Text>
+            <View style={styles.Header}>
+                {userProfile ? (
+                    <>
+                        <View style={styles.imageContainer}>
+                            <Image
+                                source={{ uri: userProfile.profilePicture || 'default_image_uri_here' }} // Adjust 'default_image_uri_here' as needed
+                                style={styles.profileImage}
+                            />
+                            {/* Button for picking a new image */}
+                            <TouchableOpacity style={styles.changeImageButton} onPress={pickImage}>
+                                <MaterialIcons name="photo-camera" size={24} color="white" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.profileName}>{userProfile.name}</Text>
+                    </>
+                ) : (
+                    <Text>Loading profile...</Text>
+                )}
+            </View>
             {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-            <Button title="Pick an Image" onPress={pickImage} />
             <Button title="Change Profile Picture" onPress={confirmUploadImage} />
         </View>
     );
@@ -79,10 +97,45 @@ const MesPref = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#95E1D3'
+        backgroundColor: '#95E1D3',
+        paddingTop: 20,
+    },
+    Header: {
+        alignItems: 'center',
+        marginTop:"10%",
+        marginBottom: 20, // Space between header and the rest of the content
+    },
+    imageContainer: {
+        position: 'relative',
+    },
+    changeImageButton: {
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#007bff', // Bootstrap primary button color for example
+        borderRadius: 20,
+        padding: 8,
+    },
+    profileImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60, // Half of width/height to make it circular
+        resizeMode: 'cover',
+        borderWidth: 2,
+        borderColor: 'white',
+    },
+    profileName: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    pickedImage: {
+        width: 200,
+        height: 200,
+        marginBottom: 20,
     },
 });
 
