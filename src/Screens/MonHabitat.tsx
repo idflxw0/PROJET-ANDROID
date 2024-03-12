@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Button, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { auth, db } from '../config/firebase'; // Ensure these are correctly imported
-import { collection, addDoc,query, where, getDocs ,orderBy  } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
+import { collection, addDoc,query, where, getDocs ,orderBy,deleteDoc,writeBatch } from 'firebase/firestore';
 
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
@@ -91,8 +91,26 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
         setModalVisible(false);
     };
 
-    const resetEquipment = () => {
-        setEquipmentData([]);
+    const resetEquipment = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const equipmentQuery = query(collection(db, "users", user.uid, "equipments"));
+            try {
+                const querySnapshot = await getDocs(equipmentQuery);
+                const batch = writeBatch(db);
+                querySnapshot.forEach((docSnapshot) => {
+                    batch.delete(docSnapshot.ref);
+                });
+                await batch.commit();
+                setEquipmentData([]);
+                alert('Tous les équipements ont été supprimés.');
+            } catch (error) {
+                console.error("Error deleting equipment data:", error);
+                alert('Erreur lors de la suppression des équipements.');
+            }
+        } else {
+            alert('No authenticated user found.');
+        }
     };
 
     const pickImage = (image: string) => {
