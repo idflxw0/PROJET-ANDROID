@@ -9,9 +9,8 @@ const powerImage = require('../../assets/power.png');
 
 // @ts-ignore
 const Reservation = ({navigation}) => {
-
     const HanderNavigateToConfirmationPage = () => {
-        navigation.navigate("Reservation");
+        navigation.navigate("ConfirmationPage");
     }
 
     return (
