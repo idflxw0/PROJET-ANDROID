@@ -1,17 +1,53 @@
-import React, {useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { Swipeable } from 'react-native-gesture-handler';
-import {collection, getDocs, query} from "firebase/firestore";
-import {db} from "../config/firebase";
-import {useResidents} from "../hook/useResident";
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { useResidents } from "../hook/useResident";
+import { db } from "../config/firebase";
+import { collection, getDocs, query } from "firebase/firestore";
 
-//@ts-ignore
-const HomePage = ({ navigation }) => {
-    const { residents, loading, error } = useResidents();
-    const handelrNavigateToReservation = () => {
+const HomePage = () => {
+    const navigation = useNavigation();
+    const { residents, totalPower, loading, error, refresh } = useResidents();
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+
+            //alert('Refreshed');
+            refresh();
+        });
+
+        return unsubscribe;
+    }, [navigation, refresh]);
+
+
+
+    const [totalPowers, setTotalPower] = useState(0);
+
+    useEffect(() => {
+        const calculateTotalPower = async () => {
+            let total = 0;
+            for (const resident of residents) {
+                const equipmentsQuerySnapshot = await getDocs(
+                    query(collection(db, 'users', resident.id, 'equipments'))
+                );
+                equipmentsQuerySnapshot.forEach((doc) => {
+                    const equipmentData = doc.data();
+                    total += equipmentData.puissance;
+                });
+            }
+            setTotalPower(total);
+        };
+
+        if (residents.length > 0) {
+            calculateTotalPower();
+        }
+    }, [residents]);
+    
+
+    const handleNavigateToReservation = () => {
+        // @ts-ignore
         navigation.navigate("Reservation");
     };
 
@@ -29,7 +65,7 @@ const HomePage = ({ navigation }) => {
                     <View style={styles.statCard}>
                         <Icon name="flash-outline" size={30} color="#000" />
                         <Text style={styles.statLabel}>Puissance Max (en W)</Text>
-                        <Text style={styles.statValue}>10000</Text>
+                        <Text style={styles.statValue}>{totalPowers}</Text>
                     </View>
                 </View>
             </View>
@@ -42,9 +78,9 @@ const HomePage = ({ navigation }) => {
             </View>
             <TouchableOpacity
                 style={styles.button}
-                onPress={handelrNavigateToReservation}
+                onPress={handleNavigateToReservation}
             >
-                <Text style={styles.buttonText} >Réserver</Text>
+                <Text style={styles.buttonText}>Réserver</Text>
             </TouchableOpacity>
         </View>
     );
@@ -82,7 +118,6 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     calendar: {
-
         padding: 20,
         borderRadius: 10,
         backgroundColor: '#FFFFFF',

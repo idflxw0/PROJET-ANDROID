@@ -1,43 +1,55 @@
 // useResidents.js
-import { useState, useEffect } from 'react';
-import { db } from '../config/firebase'; // Ensure this points to your Firebase config file
+import { useState, useEffect, useCallback } from 'react';
+import { db } from '../config/firebase'; // Assurez-vous que cela pointe vers votre fichier de configuration Firebase
 import { collection, getDocs, query } from 'firebase/firestore';
 
 type Resident = {
+    id: string;
     name: string;
     equipmentCount: number;
 };
 
 export const useResidents = () => {
     const [residents, setResidents] = useState<Resident[]>([]);
+    const [totalPower, setTotalPower] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
+    const fetchResidentsData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const usersQuery = query(collection(db, "users"));
+            const querySnapshot = await getDocs(usersQuery);
+            const usersData: Resident[] = [];
+            let totalPowerSum = 0;
+            await Promise.all(
+                querySnapshot.docs.map(async (userDoc) => {
+                    const userId = userDoc.id;
+                    const userName = userDoc.data().name;
+                    const equipmentsQuery = query(collection(db, "users", userId, "equipments"));
+                    const equipmentsSnapshot = await getDocs(equipmentsQuery);
+                    const equipmentCount = equipmentsSnapshot.size;
+                    let userPower = 0;
+                    equipmentsSnapshot.forEach((doc) => {
+                        const equipmentData = doc.data();
+                        userPower += equipmentData.puissance;
+                    });
+                    totalPowerSum += userPower;
+                    usersData.push({ id: userId, name: userName, equipmentCount });
+                })
+            );
+            setResidents(usersData);
+            setTotalPower(totalPowerSum);
+        } catch (e) {
+            setError(e as Error);
+        } finally {
+            setLoading(false);
+        }
+    }, [db]);
+
     useEffect(() => {
-        const fetchResidentsData = async () => {
-            setLoading(true);
-            try {
-                const usersQuery = query(collection(db, "users"));
-                const querySnapshot = await getDocs(usersQuery);
-                const usersData = await Promise.all(
-                    querySnapshot.docs.map(async (userDoc) => {
-                        const userName = userDoc.data().name;
-                        const equipmentsQuery = query(collection(db, "users", userDoc.id, "equipments"));
-                        const equipmentsSnapshot = await getDocs(equipmentsQuery);
-                        const equipmentCount = equipmentsSnapshot.size;
-                        return { name: userName, equipmentCount };
-                    })
-                );
-                setResidents(usersData);
-            } catch (e) {
-                setError(e as Error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchResidentsData();
-    }, []);
+    }, [fetchResidentsData]);
 
-    return { residents, loading, error };
+    return { residents, totalPower, loading, error, refresh: fetchResidentsData };
 };

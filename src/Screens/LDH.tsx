@@ -2,23 +2,35 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useResidents} from "../hook/useResident";
+import {useNavigation} from "@react-navigation/native";
 
 
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
-
+const peopleImage = require('../../assets/people 1.png');
 
 
 const LDH = () => {
+    const navigation = useNavigation();
+    const { residents, totalPower, loading, error, refresh } = useResidents();
 
-    const { residents, loading, error } = useResidents();
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+
+            //alert('Refreshed');
+            refresh();
+        });
+
+        return unsubscribe;
+    }, [navigation, refresh]);
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Liste des habitats</Text>
                 <View style={styles.infoContainer}>
                     <View style={[styles.infoItem, styles.infoItemFirst]}>
-                        <Image source={powerImage} style={styles.infoImage} />
+                        <Image source={peopleImage} style={styles.infoImage} />
 
                         <View>
                             <Text style={styles.infoText}>Nombre de résidents</Text>
@@ -26,7 +38,7 @@ const LDH = () => {
                         </View>
                     </View>
                     <View style={[styles.infoItem, styles.infoItemSecond]}>
-                        <Image source={coinImage} style={styles.infoImage} />
+                        <Image source={powerImage} style={styles.infoImage} />
                         <View>
                             <Text style={styles.infoText}>Puissance Max</Text>
                             <Text style={[styles.infoText, styles.infoNumber]}>10000 W</Text>
