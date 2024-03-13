@@ -1,20 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
+import {collection, getDocs, query} from "firebase/firestore";
+import {db} from "../config/firebase";
+import {useResidents} from "../hook/useResident";
 
-type RootStackParamList = {
-    Reservation: undefined; // define your navigation parameters if any
-};
-
-type Props = {
-    navigation: NavigationProp<RootStackParamList>;
-};
-
-const HomePage: React.FC<Props> = ({ navigation }) => {
-
+//@ts-ignore
+const HomePage = ({ navigation }) => {
+    const { residents, loading, error } = useResidents();
     const handelrNavigateToReservation = () => {
         navigation.navigate("Reservation");
     };
@@ -27,7 +23,7 @@ const HomePage: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.statCard}>
                         <Icon name="people-outline" size={30} color="#000" />
                         <Text style={styles.statLabel}>Nombre de résidents</Text>
-                        <Text style={styles.statValue}>102</Text>
+                        <Text style={styles.statValue}>{residents.length}</Text>
                     </View>
 
                     <View style={styles.statCard}>

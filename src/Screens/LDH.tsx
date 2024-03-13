@@ -1,38 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {auth, db} from "../config/firebase";
-import {collection, getDocs, query} from "firebase/firestore";
+import {useResidents} from "../hook/useResident";
+
+
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
 
-type Resident = {
-    name: string;
-    equipmentCount: number;
-};
+
 
 const LDH = () => {
-    const [residents, setResidents] = useState<Resident[]>([]);
 
-    useEffect(() => {
-        const fetchResidentsData = async () => {
-            const usersQuery = query(collection(db, "users"));
-            const querySnapshot = await getDocs(usersQuery);
-            const usersData = await Promise.all(
-                querySnapshot.docs.map(async (userDoc) => {
-                    const userName = userDoc.data().name;
-                    const equipmentsQuery = query(collection(db, "users", userDoc.id, "equipments"));
-                    const equipmentsSnapshot = await getDocs(equipmentsQuery);
-                    const equipmentCount = equipmentsSnapshot.size;
-                    return { name: userName, equipmentCount };
-                })
-            );
-            setResidents(usersData);
-        };
-        fetchResidentsData();
-    }, []);
-
-
+    const { residents, loading, error } = useResidents();
     return (
         <View style={styles.container}>
             <View style={styles.header}>
