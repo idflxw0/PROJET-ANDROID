@@ -23,28 +23,6 @@ const HomePage = () => {
 
 
 
-    const [totalPowers, setTotalPower] = useState(0);
-
-    useEffect(() => {
-        const calculateTotalPower = async () => {
-            let total = 0;
-            for (const resident of residents) {
-                const equipmentsQuerySnapshot = await getDocs(
-                    query(collection(db, 'users', resident.id, 'equipments'))
-                );
-                equipmentsQuerySnapshot.forEach((doc) => {
-                    const equipmentData = doc.data();
-                    total += equipmentData.puissance;
-                });
-            }
-            setTotalPower(total);
-        };
-
-        if (residents.length > 0) {
-            calculateTotalPower();
-        }
-    }, [residents]);
-    
 
     const handleNavigateToReservation = () => {
         // @ts-ignore
@@ -65,7 +43,7 @@ const HomePage = () => {
                     <View style={styles.statCard}>
                         <Icon name="flash-outline" size={30} color="#000" />
                         <Text style={styles.statLabel}>Puissance Max (en W)</Text>
-                        <Text style={styles.statValue}>{totalPowers}</Text>
+                        <Text style={styles.statValue}>{totalPower}</Text>
                     </View>
                 </View>
             </View>

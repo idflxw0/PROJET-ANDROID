@@ -2,14 +2,26 @@ import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Button, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth, db } from '../config/firebase';
-import { collection, addDoc,query, where, getDocs ,orderBy,deleteDoc,writeBatch } from 'firebase/firestore';
+import {
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs,
+    orderBy,
+    deleteDoc,
+    writeBatch,
+    updateDoc,
+    doc, getDoc
+} from 'firebase/firestore';
+import {useResidents} from "../hook/useResident";
 
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
 type NavigationProp = StackNavigationProp<any>;
 
 type Equipment = { id: number; nom: string; image: string | null; puissance: number; };
-const coins = 100;
+const initialCoins = 0;
 const equipmentImages: { [key: string]: any } = {
     'Aspirateur': require('../../assets/aspirateur.png'),
     'Climatiseur': require('../../assets/climatiseur.png'),
@@ -21,7 +33,26 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [newEquipment, setNewEquipment] = useState<Equipment>({ id: 0, nom: '', image: null, puissance: 0 });
+    const [coins, setCoins] = useState(initialCoins);
+    const fetchUserCoins = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const userCoins = userData?.coins || 0;
+                setCoins(userCoins);
+            }
+        }
+    };
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchUserCoins();
+        });
 
+        return unsubscribe;
+    }, [navigation, db]);
 
     useEffect(() => {
         const fetchEquipmentData = async () => {
@@ -55,8 +86,8 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
             alert('Veuillez selecter un équipement');
             return;
         }
-        if (isNaN(newEquipment.puissance) || newEquipment.puissance === 0) {
-            alert('La puissance doit être un nombre ou être différente de zéro');
+        if (isNaN(newEquipment.puissance) || newEquipment.puissance === 0 || newEquipment.puissance >= 1000) {
+            alert('La puissance doit être un nombre inférieur à 1000 ou être différente de zéro');
             return;
         }
         const id = equipmentData.length + 1;
@@ -120,6 +151,22 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     };
 
     const totalPower = equipmentData.reduce((sum, equipment) => sum + equipment.puissance, 0);
+
+    useEffect(() => {
+        const fetchUserCoins = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const userCoins = userData?.coins || 0;
+                    setCoins(userCoins);
+                }
+            }
+        };
+        fetchUserCoins();
+    }, [db]);
 
     return (
         <View style={styles.container}>

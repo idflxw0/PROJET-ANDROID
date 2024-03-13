@@ -1,14 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {useResidents} from "../hook/useResident";
-import {useNavigation} from "@react-navigation/native";
-
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { useResidents } from '../hook/useResident';
+import { useNavigation } from '@react-navigation/native';
 
 const powerImage = require('../../assets/power.png');
-const coinImage = require('../../assets/coin.png');
 const peopleImage = require('../../assets/people 1.png');
-
 
 const LDH = () => {
     const navigation = useNavigation();
@@ -16,8 +12,6 @@ const LDH = () => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-
-            //alert('Refreshed');
             refresh();
         });
 
@@ -31,7 +25,6 @@ const LDH = () => {
                 <View style={styles.infoContainer}>
                     <View style={[styles.infoItem, styles.infoItemFirst]}>
                         <Image source={peopleImage} style={styles.infoImage} />
-
                         <View>
                             <Text style={styles.infoText}>Nombre de résidents</Text>
                             <Text style={[styles.infoText, styles.infoNumber]}>{residents.length}</Text>
@@ -41,7 +34,7 @@ const LDH = () => {
                         <Image source={powerImage} style={styles.infoImage} />
                         <View>
                             <Text style={styles.infoText}>Puissance Max</Text>
-                            <Text style={[styles.infoText, styles.infoNumber]}>10000 W</Text>
+                            <Text style={[styles.infoText, styles.infoNumber]}>{totalPower} W</Text>
                         </View>
                     </View>
                 </View>
@@ -104,7 +97,6 @@ const styles = StyleSheet.create({
         elevation: 1,
         width: '50%',
     },
-
     infoText: {
         fontSize: 15,
         fontWeight: 'bold',

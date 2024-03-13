@@ -7,6 +7,7 @@ type Resident = {
     id: string;
     name: string;
     equipmentCount: number;
+    coins: number;
 };
 
 export const useResidents = () => {
@@ -26,6 +27,7 @@ export const useResidents = () => {
                 querySnapshot.docs.map(async (userDoc) => {
                     const userId = userDoc.id;
                     const userName = userDoc.data().name;
+                    const userCoins = userDoc.data().coins || 0;
                     const equipmentsQuery = query(collection(db, "users", userId, "equipments"));
                     const equipmentsSnapshot = await getDocs(equipmentsQuery);
                     const equipmentCount = equipmentsSnapshot.size;
@@ -35,7 +37,7 @@ export const useResidents = () => {
                         userPower += equipmentData.puissance;
                     });
                     totalPowerSum += userPower;
-                    usersData.push({ id: userId, name: userName, equipmentCount });
+                    usersData.push({ id: userId, name: userName, equipmentCount, coins: userCoins });
                 })
             );
             setResidents(usersData);

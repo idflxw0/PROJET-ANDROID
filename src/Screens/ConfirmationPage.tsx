@@ -1,10 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo for vector icons
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
+import { auth, db } from '../config/firebase';
 // @ts-ignore
 const ConfirmationPage = ({ navigation }) => {
-    const HanderNavigateToHome = () => {
+    const HanderNavigateToHome = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const currentCoins = userData?.coins || 0;
+                const updatedCoins = currentCoins + 1;
+                await updateDoc(userRef, {
+                    coins: updatedCoins
+                });
+            }
+        }
         navigation.navigate('Home');
     }
     return (
