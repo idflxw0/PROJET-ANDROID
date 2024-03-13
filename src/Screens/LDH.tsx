@@ -4,7 +4,7 @@ import { useResidents } from '../hook/useResident';
 import { useNavigation } from '@react-navigation/native';
 
 const powerImage = require('../../assets/power.png');
-const peopleImage = require('../../assets/people 1.png');
+const peopleImage = require('../../assets/people1.png');
 
 const LDH = () => {
     const navigation = useNavigation();

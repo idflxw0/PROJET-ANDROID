@@ -95,6 +95,7 @@ const MesPref = ({ navigation }) => {
     const handleSaveProfile = async () => {
         const user = auth.currentUser;
         if (user) {
+            confirmUploadImage();
             if (newName === '') return;
             const userDocRef = doc(db, "users", user.uid);
             try {
