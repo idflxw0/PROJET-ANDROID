@@ -44,17 +44,7 @@ const HomePage = () => {
             calculateTotalPower();
         }
     }, [residents]);
-
-    // Use useFocusEffect to refetch data when the screen gains focus
-    useFocusEffect(
-        React.useCallback(() => {
-            // Fetch residents data again when the screen gains focus
-            // This will ensure that the data is always up-to-date when the user returns to this screen
-            // You can place your fetchResidentsData logic here or call a function to fetch data
-            // For simplicity, you can just log a message for now
-            console.log('HomePage gained focus. Fetching data...');
-        }, [])
-    );
+    
 
     const handleNavigateToReservation = () => {
         // @ts-ignore
