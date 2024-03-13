@@ -4,6 +4,9 @@ import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo for
 
 // @ts-ignore
 const ConfirmationPage = ({ navigation }) => {
+    const HanderNavigateToHome = () => {
+        navigation.navigate('Home');
+    }
     return (
 
         <View style={styles.container}>
@@ -18,7 +21,7 @@ const ConfirmationPage = ({ navigation }) => {
             <Text style={styles.message}>
                 Nous vous tiendrons informé de la situation au plus vite.
             </Text>
-            <TouchableOpacity style={styles.button} onPress={navigation.goBack}>
+            <TouchableOpacity style={styles.button} onPress={HanderNavigateToHome}>
                 <Text style={styles.buttonText}>RETOUR</Text>
             </TouchableOpacity>
         </View>
