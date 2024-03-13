@@ -44,10 +44,7 @@ const HomePage = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-
         </View>
-
-
     );
 };
 
