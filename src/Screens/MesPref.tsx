@@ -1,22 +1,28 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { auth, db } from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import {doc, setDoc, updateDoc} from 'firebase/firestore';
-import {ImagePickerResult} from "expo-image-picker";
-import {useUserProfile} from "../hook/useUserProfile ";
-import {MaterialIcons} from "@expo/vector-icons";
-import {NavigationProp} from "@react-navigation/native";
-
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { ImagePickerResult } from "expo-image-picker";
+import { useUserProfile } from "../hook/useUserProfile ";
+import { MaterialIcons } from "@expo/vector-icons";
+import { NavigationProp } from "@react-navigation/native";
 
 //@ts-ignore
-const MesPref = ({navigation}) => {
+const MesPref = ({ navigation }) => {
     const [image, setImage] = useState<string | null>(null);
     const { userProfile, refreshUserProfile } = useUserProfile();
     const [newName, setNewName] = useState('');
+    const [toggleValue, setToggleValue] = useState(false); // Thème clair par défaut
 
-    const getFilePermission = async() => {
+    useEffect(() => {
+        // Appliquer le thème sombre lors de l'entrée sur la page
+        // Mettez en œuvre cela en fonction de votre logique de thème sombre
+        // Peut-être basé sur les préférences utilisateur stockées ou les paramètres de l'application
+    }, []);
+
+    const getFilePermission = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Sorry, we need camera roll permissions to make this work!');
@@ -38,7 +44,6 @@ const MesPref = ({navigation}) => {
             const pickedImageUri = result.assets[0].uri;
             setImage(pickedImageUri);
         }
-
     };
 
     const confirmUploadImage = async () => {
@@ -48,7 +53,6 @@ const MesPref = ({navigation}) => {
             Alert.alert("No Image Selected", "Please pick an image first.");
         }
     };
-
 
     const uploadImage = async (uri: string) => {
         const user = auth.currentUser;
@@ -105,9 +109,12 @@ const MesPref = ({navigation}) => {
         }
     };
 
+    const switchTheme = () => {
+        setToggleValue(!toggleValue); // Inverser le thème lorsque le bouton est pressé
+    };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, toggleValue ? styles.containerBlack : styles.containerDefault]}>
             <View style={styles.Header}>
                 {userProfile ? (
                     <>
@@ -143,6 +150,10 @@ const MesPref = ({navigation}) => {
             <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
                 <Text style={styles.signOutButtonText}>Sign Out</Text>
             </TouchableOpacity>
+            {/* Bouton à bascule */}
+            <TouchableOpacity onPress={switchTheme} style={styles.toggleButton}>
+                <Text style={styles.toggleButtonText}>{toggleValue ? 'Mode Sombre' : 'Mode Clair'}</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -152,12 +163,17 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#95E1D3',
         paddingTop: 20,
+    },
+    containerBlack: {
+        backgroundColor: '#1C1C1E',
+    },
+    containerDefault: {
+        backgroundColor: '#95E1D3',
     },
     Header: {
         alignItems: 'center',
-        marginTop:"10%",
+        marginTop: "10%",
         marginBottom: 20,
     },
     imageContainer: {
@@ -211,7 +227,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     icon: {
-       right: '150%',
+        right: '150%',
     },
     buttonModifier: {
         marginTop: 10,
@@ -271,6 +287,19 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 2,
+    },
+    toggleButton: {
+        backgroundColor: '#f44336',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 20,
+        marginTop: 10,
+    },
+    toggleButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
     },
 });
 
