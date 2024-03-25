@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { auth, db } from '../config/firebase';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { ImagePickerResult } from "expo-image-picker";
-import { useUserProfile } from "../hook/useUserProfile ";
-import { MaterialIcons } from "@expo/vector-icons";
-import { NavigationProp } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/Ionicons';
 //@ts-ignore
 const MesPref = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Vos préférences</Text>
-            <TouchableOpacity style={styles.item} onPress={() => {/* navigate to your account screen */}}>
+            <TouchableOpacity style={styles.item} onPress={() => {navigation.navigate('ModifyProfile')}}>
                 <Text style={styles.text}>Votre compte</Text>
                 <Icon name="chevron-forward-outline" size={20} color="grey" />
             </TouchableOpacity>
