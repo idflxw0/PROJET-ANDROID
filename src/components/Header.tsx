@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 // @ts-ignore
@@ -9,8 +9,11 @@ const Header = ({title,navigation}) => {
     }
     return (
         <View style={styles.backIconContainer}>
-            <AntDesign name="arrowleft" size={24} color="black" onPress={handleBackPress} />
+            <TouchableOpacity onPress={handleBackPress} style={styles.backIcon}>
+                <AntDesign name="arrowleft" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.headerTitle}>{title}</Text>
+            <View style={styles.backIcon} />
         </View>
     );
 };
@@ -22,8 +25,11 @@ const styles = StyleSheet.create({
         marginTop: '-5%',
         alignSelf: 'flex-start',
         marginVertical: 16,
-        marginLeft: '2%',
+        left : '-2%',
         paddingBottom: 30,
+    },
+    backIcon: {
+        padding: 10, // Makes it easier to press
     },
     headerTitle: {
         flex: 1,

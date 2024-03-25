@@ -38,7 +38,7 @@ const SignInScreen = ({ navigation }) => {
                 colors={['#B7FFB1', '#1aff00']}
                 style={styles.background}
             />
-            <Header title={"Log in"} navigation={navigation}></Header>
+            <Header title={'Log in'} navigation={navigation}></Header>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
