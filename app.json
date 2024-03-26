@@ -3,6 +3,7 @@
     "name": "Ecorizz",
     "slug": "Ecorizz",
     "version": "1.0.0",
+    "scheme": "myapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,8 +22,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.anonymous.Ecorizz"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
