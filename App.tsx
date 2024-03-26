@@ -20,7 +20,7 @@ import modifProfile from "./src/Screens/ModifProfile";
 const Stack = createStackNavigator();
 export default function App() {
   return (
-    <NavigationContainer>
+    /*<NavigationContainer>
       <Stack.Navigator initialRouteName="LandingPage">
         <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }}/>
         <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }}/>
@@ -31,7 +31,20 @@ export default function App() {
         <Stack.Screen name="ConfirmationPage" component={ConfirmationPage} options={{ headerShown: false }}/>
         <Stack.Screen name="ModifyProfile" component={modifProfile} options={{ headerShown: false }}/>
       </Stack.Navigator>
-    </NavigationContainer>
+    </NavigationContainer>*/
+
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="LandingPage">
+            <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }}/>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false, gestureEnabled: false }}/>
+            <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false, gestureEnabled: false }}/>
+            <Stack.Screen name="Home" component={DrawerNavigation} options={{ headerShown: false , gestureEnabled: false}}/>
+            <Stack.Screen name="Reservation" component={Reservation} options={{ headerShown: false }}/>
+            <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false }}/>
+            <Stack.Screen name="ConfirmationPage" component={ConfirmationPage} options={{ headerShown: false }}/>
+            <Stack.Screen name="ModifyProfile" component={modifProfile} options={{ headerShown: false }}/>
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }
 
