@@ -4,10 +4,12 @@ import { db } from '../config/firebase'; // Assurez-vous que cela pointe vers vo
 import { collection, getDocs, query } from 'firebase/firestore';
 
 type Resident = {
+    timeSlot: string;
     id: string;
     name: string;
     equipmentCount: number;
     coins: number;
+    totalPower: number;
 };
 
 export const useResidents = () => {
@@ -27,6 +29,7 @@ export const useResidents = () => {
                 querySnapshot.docs.map(async (userDoc) => {
                     const userId = userDoc.id;
                     const userName = userDoc.data().name;
+                    const usertimeSlot = userDoc.data().TimeSlot || "9h-10h";
                     const userCoins = userDoc.data().coins || 0;
                     const equipmentsQuery = query(collection(db, "users", userId, "equipments"));
                     const equipmentsSnapshot = await getDocs(equipmentsQuery);
@@ -37,7 +40,7 @@ export const useResidents = () => {
                         userPower += equipmentData.puissance;
                     });
                     totalPowerSum += userPower;
-                    usersData.push({ id: userId, name: userName, equipmentCount, coins: userCoins });
+                    usersData.push({ id: userId, name: userName, equipmentCount, coins: userCoins , timeSlot: usertimeSlot, totalPower: userPower }); // Add totalPower to each resident
                 })
             );
             setResidents(usersData);

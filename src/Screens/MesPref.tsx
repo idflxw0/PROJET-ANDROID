@@ -24,7 +24,7 @@ const MesPref = ({ navigation }) => {
                     <Icon name="chevron-forward-outline" size={20} color="grey" />
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.item} onPress={() => {/* navigate to your account screen */}}>
+            <TouchableOpacity style={styles.item} onPress={() => {navigation.navigate('Notification')}}>
                 <Text style={styles.text}>Notification</Text>
                 <Icon name="chevron-forward-outline" size={20} color="grey" />
             </TouchableOpacity>
