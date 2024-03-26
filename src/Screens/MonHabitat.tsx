@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import {useResidents} from "../hook/useResident";
 
+
 const powerImage = require('../../assets/power.png');
 const coinImage = require('../../assets/coin.png');
 type NavigationProp = StackNavigationProp<any>;
@@ -35,11 +36,47 @@ const equipmentDefaultPower: { [key: string]: number } = {
     'Fer à repasser': 150,
     'Machine à laver': 400,
 };
+
+const initialTimeSlot = "9h-10h";
+const timeSlots = ["9h-10h", "10h-11h", "11h-12h", "12h-13h", "13h-14h", "14h-15h", "15h-16h", "16h-17h", "17h-18h", "18h-19h", "19h-20h", "20h-21h", "21h-22h"];
+const modifyTimeSlot = async (newTimeSlot: string) => {
+    try {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, {
+                TimeSlot: newTimeSlot
+            });
+        } else {
+            alert('No authenticated user found.');
+        }
+    } catch (error) {
+        console.error("Error updating time slot in Firestore:", error);
+        alert('Error updating time slot in Firestore.');
+    }
+};
+
+// @ts-ignore
+const TimeSlotButton = ({ timeSlot, handleModifyTimeSlot }) => (
+    <TouchableOpacity style={styles.timeSlotButton} onPress={() => handleModifyTimeSlot(timeSlot)}>
+        <Text style={styles.timeSlotButtonText}>{timeSlot}</Text>
+    </TouchableOpacity>
+);
+
+
 const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [newEquipment, setNewEquipment] = useState<Equipment>({ id: 0, nom: '', image: null, puissance: 0 });
     const [coins, setCoins] = useState(initialCoins);
+    const [timeslot, setTimeslot] = useState(initialTimeSlot);
+    const { residents, loading, error, refresh } = useResidents();
+
+    // Add a new state variable for the "Modify Time Slot" modal visibility
+    const [modifyTimeSlotModalVisible, setModifyTimeSlotModalVisible] = useState(false);
+
+
+
     const fetchUserCoins = async () => {
         const user = auth.currentUser;
         if (user) {
@@ -59,6 +96,31 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
 
         return unsubscribe;
     }, [navigation, db]);
+    const fetchUserTimeSlot = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const userTimeSlot = userData?.TimeSlot || 0;
+                setTimeslot(userTimeSlot);
+            }
+        }
+    };
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            refresh();
+        });
+
+        return unsubscribe;
+    }, [navigation, refresh]);
+
+    const handleModifyTimeSlot = (newTimeSlot: string) => {
+        modifyTimeSlot(newTimeSlot);
+        setTimeslot(newTimeSlot);
+        setModifyTimeSlotModalVisible(false);
+    };
 
     useEffect(() => {
         const fetchEquipmentData = async () => {
@@ -177,6 +239,7 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
 
     return (
         <View style={styles.container}>
+
             <View style={styles.header}>
                 <Text style={styles.heading}>Mon habitat</Text>
                 <View style={styles.addButtonContainer}>
@@ -203,7 +266,31 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
                         <TouchableOpacity onPress={resetEquipment} style={styles.resetButton}>
                             <Text style={styles.resetButtonText}>Réinitialiser</Text>
                         </TouchableOpacity>
+
                     </View>
+                    <Text style={styles.timeSlotText}>Time Slot: {timeslot}</Text>
+                    <Button title="Modifier Time Slot" onPress={() => setModifyTimeSlotModalVisible(true)} />
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modifyTimeSlotModalVisible}
+                        onRequestClose={() => {
+                            setModifyTimeSlotModalVisible(!modifyTimeSlotModalVisible);
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalText}>Selectionner un horaire</Text>
+                                {/* Add a new View component with a flexWrap style */}
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                                    {timeSlots.map(timeSlot => (
+                                        <TimeSlotButton key={timeSlot} timeSlot={timeSlot} handleModifyTimeSlot={handleModifyTimeSlot} />
+                                    ))}
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
             </View>
             <View style={styles.equipmentHeader}>
@@ -264,6 +351,49 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
 };
 
 const styles = StyleSheet.create({
+    timeSlotText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    timeSlotButton: {
+        backgroundColor: '#2196F3',
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginTop: 10,
+    },
+    timeSlotButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
     infoContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -395,31 +525,8 @@ const styles = StyleSheet.create({
         color: '#FFF', // Change text color to white
         fontSize: 14, // Adjust the font size if needed
     },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22,
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
+
+
     container: {
         flex: 1,
         backgroundColor: '#95E1D3',

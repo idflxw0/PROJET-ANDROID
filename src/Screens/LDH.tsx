@@ -12,7 +12,7 @@ const LDH = () => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            refresh();
+            refresh().then(r => console.log('Refreshed'));
         });
 
         return unsubscribe;

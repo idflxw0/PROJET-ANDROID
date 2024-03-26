@@ -43,9 +43,10 @@ export default function App() {
             <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false, gestureEnabled: false }}/>
             <Stack.Screen name="Home" component={DrawerNavigation} options={{ headerShown: false , gestureEnabled: false}}/>
             <Stack.Screen name="Reservation" component={Reservation} options={{ headerShown: false }}/>
-            <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false }}/>
+
             <Stack.Screen name="ConfirmationPage" component={ConfirmationPage} options={{ headerShown: false }}/>
             <Stack.Screen name="ModifyProfile" component={modifProfile} options={{ headerShown: false }}/>
+            <Stack.Screen name="Notification" component={Notification} options={{ headerShown: false }}/>
         </Stack.Navigator>
       </NavigationContainer>
   );
