@@ -37,7 +37,7 @@ const equipmentDefaultPower: { [key: string]: number } = {
     'Machine à laver': 400,
 };
 
-const initialTimeSlot = "9h-10h";
+const initialTimeSlot = "";
 const timeSlots = ["9h-10h", "10h-11h", "11h-12h", "12h-13h", "13h-14h", "14h-15h", "15h-16h", "16h-17h", "17h-18h", "18h-19h", "19h-20h", "20h-21h", "21h-22h"];
 const modifyTimeSlot = async (newTimeSlot: string) => {
     try {
