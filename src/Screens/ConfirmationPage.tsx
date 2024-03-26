@@ -5,36 +5,29 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 import { auth, db } from '../config/firebase';
 // @ts-ignore
-const ConfirmationPage = ({ navigation }) => {
+const ConfirmationPage = ({ navigation, route }) => {
+    const color = route.params?.color;
     const HanderNavigateToHome = async () => {
         const user = auth.currentUser;
         if (user) {
             const userRef = doc(db, "users", user.uid);
             const userDoc = await getDoc(userRef);
             if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const currentCoins = userData?.coins || 0;
-                const updatedCoins = currentCoins + 1;
-                await updateDoc(userRef, {
-                    coins: updatedCoins
-                });
+                navigation.navigate('Home');
             }
         }
-        navigation.navigate('Home');
     }
     return (
-
         <View style={styles.container}>
-
             <Text style={styles.heading}>
                 Votre réservation a bien été prise en compte !
             </Text>
-
             <View style={styles.blueShadowContainer}>
                 <Ionicons name="checkmark-circle" size={150} color="#007AFF" style={styles.blueShadow} />
             </View>
             <Text style={styles.message}>
-                Nous vous tiendrons informé de la situation au plus vite. Vous venez de gagner 1 éco-coin !
+                Nous vous tiendrons informé de la situation au plus vite.
+                {color === 'green' ? " Vous venez de gagner 1 éco-coin !" : (color === 'red' ? " Malheureusement, vous avez perdu 1 éco-coin." : null)}
             </Text>
             <TouchableOpacity style={styles.button} onPress={HanderNavigateToHome}>
                 <Text style={styles.buttonText}>RETOUR</Text>

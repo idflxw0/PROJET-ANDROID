@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
 const powerImage = require('../../assets/power.png');
 import { useResidents } from "../hook/useResident";
 import {auth, db} from "../config/firebase";
-import {doc, getDoc} from "firebase/firestore";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
 
 // @ts-ignore
 const Reservation = ({ navigation }) => {
-    const [timeSlot, setTimeSlot] = useState('');
+    const [peakTimeSlot, setPeakTimeSlot] = useState("");
+    const [TimeSlot, setTimeSlot] = useState('');
     const { residents } = useResidents();
     // @ts-ignore
-
     const fetchUserCoins = async () => {
         const user = auth.currentUser;
         if (user) {
@@ -23,21 +23,51 @@ const Reservation = ({ navigation }) => {
             }
         }
     };
+    useEffect(() => {
+        let maxWattage = 0;
+        let peakTimeSlot = "";
+
+        timeSlots.forEach(slot => {
+            const totalWattage = residents.filter(resident => resident.timeSlot === slot).reduce((total, resident) => total + resident.totalPower, 0);
+            if (totalWattage > maxWattage) {
+                maxWattage = totalWattage;
+                peakTimeSlot = slot;
+            }
+        });
+
+        setPeakTimeSlot(peakTimeSlot);
+    }, [residents]);
+
+    const assignColor = (timeSlot: string) => {
+        const wattage = calculateMaxWattage(timeSlot);
+        if (wattage <= 1000) {
+            return 'green';
+        } else if (wattage <= 2500 && wattage > 1000) {
+            return 'orange';
+        } else if (wattage > 2500) {
+            return 'red';
+        }
+    }
+    const calculateMaxWattage = (slot: string) => {
+        return Math.max(...residents.filter(resident => resident.timeSlot === slot).map(resident => resident.totalPower));
+    }
+
 
     // @ts-ignore
-    const HanderNavigateToConfirmationPage = (timeSlot) => {
+    // @ts-ignore
+    const HanderNavigateToConfirmationPage = async (TimeSlot) => {
         const currentUser = residents.find(resident => resident.id === auth.currentUser?.uid);
         if (!currentUser || currentUser.equipmentCount === 0) {
             // The resident has no equipment
             alert("Vous n'avez pas d'équipement, veuillez en ajouter pour réserver un créneau.")
         } else {
-            if (!timeSlot) {
+            if (!TimeSlot) {
                 // Case 1: No time slot selected
-                alert("Please select a time slot.");
+                alert("Veuillez sélectionner un créneau horaire.");
             } else {
                 Alert.alert(
                     "Confirmation",
-                    `You selected ${timeSlot}. Do you want to reserve for this time slot?`,
+                    `You selected ${TimeSlot}. Voulez-vous réserver pour ce créneau horaire ?`,
                     [
                         {
                             text: "No",
@@ -46,7 +76,28 @@ const Reservation = ({ navigation }) => {
                         {
                             text: "Yes",
                             // @ts-ignore
-                            onPress: () => navigation.navigate("ConfirmationPage")
+                            onPress: async () => {
+                                const color = assignColor(TimeSlot);
+                                const user = auth.currentUser;
+                                if (user) {
+                                    const userRef = doc(db, "users", user.uid);
+                                    const userDoc = await getDoc(userRef);
+                                    if (userDoc.exists()) {
+                                        const userData = userDoc.data();
+                                        let userCoins = userData?.coins || 0;
+                                        if (color === 'green') {
+                                            userCoins++;
+                                        } else if (color === 'red') {
+                                            userCoins--;
+                                        }
+                                        await updateDoc(userRef, {
+                                            coins: userCoins,
+                                            TimeSlot: TimeSlot
+                                        });
+                                    }
+                                }
+                                navigation.navigate("ConfirmationPage", { color: color });
+                            }
                         }
                     ]
                 );
@@ -54,11 +105,10 @@ const Reservation = ({ navigation }) => {
         }
     }
 
-    // @ts-ignore
-    const handleSelectTimeSlot = (timeSlot) => {
-        setTimeSlot(timeSlot);
-        // You can add your logic here to handle the selection of a time slot
-        console.log("Selected time slot:", timeSlot);
+// @ts-ignore
+    const handleSelectTimeSlot = (TimeSlot) => {
+        setTimeSlot(TimeSlot);
+        console.log("Selected time slot:", TimeSlot);
     }
 
     const timeSlots = [
@@ -76,27 +126,30 @@ const Reservation = ({ navigation }) => {
             <View style={[styles.infoItem, styles.infoItemFirst]}>
                 <Image source={powerImage} style={styles.infoImage} />
                 <View>
-                    <Text style={styles.infoText}>Pic de consommation:</Text>
-                    <Text style={styles.infoNumber}>19h-20h</Text>
+                    <Text style={styles.infoText}>Pic de consommation: </Text>
+                    <Text style={styles.infoNumber}>{peakTimeSlot}</Text>
                 </View>
             </View>
 
             <View style={[styles.info, styles.infoItemsqr]}>
                 <Text style={styles.infoTextsqr}>Choix d’horaires moins énergivores</Text>
                 <View style={styles.timeSlotContainer}>
-                    {timeSlots.map((timeSlot, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.timeSlotButton}
-                            onPress={() => handleSelectTimeSlot(timeSlot)}>
-                            <Text style={styles.timeSlotText}>{timeSlot}</Text>
-                        </TouchableOpacity>
-                    ))}
+                    {timeSlots.map((TimeSlot, index) => {
+                        const color = assignColor(TimeSlot);
+                        return (
+                            <TouchableOpacity
+                                key={index}
+                                style={[styles.timeSlotButton, {backgroundColor: color}]}
+                                onPress={() => handleSelectTimeSlot(TimeSlot)}>
+                                <Text style={styles.timeSlotText}>{TimeSlot}</Text>
+                            </TouchableOpacity>
+                        );
+                    })}
                 </View>
             </View>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => HanderNavigateToConfirmationPage(timeSlot)}>
+                onPress={() => HanderNavigateToConfirmationPage(TimeSlot)}>
                 <Text style={styles.buttonText}>Réserver</Text>
             </TouchableOpacity>
         </View>
@@ -177,17 +230,15 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     timeSlotContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
+        flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'
     },
     timeSlotButton: {
-        backgroundColor: '#000000',
-        paddingVertical: 15,
-        borderRadius: 8,
-        margin: 5,
         width: '30%',
-        height: '20%',
+        height: '27%',
+        backgroundColor: '#000000',
+        borderRadius: 8,
+        padding: 10,
+        elevation: 2,
         marginTop: 10,
     },
     timeSlotText: {
