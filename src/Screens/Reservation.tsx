@@ -1,15 +1,38 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
 const powerImage = require('../../assets/power.png');
 
 // @ts-ignore
 const Reservation = ({ navigation }) => {
-    const HanderNavigateToConfirmationPage = () => {
-        navigation.navigate("ConfirmationPage");
+    const [timeSlot, setTimeSlot] = useState('');
+    // @ts-ignore
+    const HanderNavigateToConfirmationPage = (timeSlot) => {
+        if (!timeSlot) {
+            // Case 1: No time slot selected
+            alert("Please select a time slot.");
+        }
+        else {
+            Alert.alert(
+                "Confirmation",
+                `You selected ${timeSlot}. Do you want to reserve for this time slot?`,
+                [
+                    {
+                        text: "No",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Yes",
+                        // @ts-ignore
+                        onPress: () => navigation.navigate("ConfirmationPage")
+                    }
+                ]
+            );
+        }
     }
 
     // @ts-ignore
     const handleSelectTimeSlot = (timeSlot) => {
+        setTimeSlot(timeSlot);
         // You can add your logic here to handle the selection of a time slot
         console.log("Selected time slot:", timeSlot);
     }
@@ -47,7 +70,9 @@ const Reservation = ({ navigation }) => {
                     ))}
                 </View>
             </View>
-            <TouchableOpacity style={styles.button} onPress={HanderNavigateToConfirmationPage}>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => HanderNavigateToConfirmationPage(timeSlot)}>
                 <Text style={styles.buttonText}>Réserver</Text>
             </TouchableOpacity>
         </View>

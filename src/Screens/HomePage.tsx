@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
@@ -10,6 +10,7 @@ import { collection, getDocs, query } from "firebase/firestore";
 const HomePage = () => {
     const navigation = useNavigation();
     const { residents, totalPower, loading, error, refresh } = useResidents();
+    const [selectedDate, setSelectedDate] = useState('');
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -20,6 +21,46 @@ const HomePage = () => {
 
         return unsubscribe;
     }, [navigation, refresh]);
+
+
+    // @ts-ignore
+    const handleDayPress = (day) => {
+        const date = day.dateString; // The date is in the format 'YYYY-MM-DD'
+        setSelectedDate(date);
+        console.log("Selected date:", date);
+    };
+
+    const handleReservations = () => {
+        if (!selectedDate) {
+            // Case 1: No date selected
+            alert("Please select a date.");
+        } else {
+            const today = new Date();
+            const selected = new Date(selectedDate);
+
+            if (selected.setHours(0,0,0,0) < today.setHours(0,0,0,0)) {
+                // Case 2: Selected date is before today
+                alert("Please select a date that is today or in the future.");
+            } else {
+                // Case 3: Selected date is today or in the future
+                Alert.alert(
+                    "Confirmation",
+                    `You selected ${selectedDate}. Do you want to reserve for this day?`,
+                    [
+                        {
+                            text: "No",
+                            style: "cancel"
+                        },
+                        {
+                            text: "Yes",
+                            // @ts-ignore
+                            onPress: () => navigation.navigate("Reservation")
+                        }
+                    ]
+                );
+            }
+        }
+    };
 
 
 
@@ -49,6 +90,7 @@ const HomePage = () => {
             </View>
             <View style={styles.calendar}>
                 <Calendar
+                    onDayPress={handleDayPress}
                     markedDates={{
                         '2024-03-26': { selected: true, marked: true, dotColor: 'red' }
                     }}
@@ -56,7 +98,7 @@ const HomePage = () => {
             </View>
             <TouchableOpacity
                 style={styles.button}
-                onPress={handleNavigateToReservation}
+                onPress={handleReservations}
             >
                 <Text style={styles.buttonText}>Réserver</Text>
             </TouchableOpacity>
