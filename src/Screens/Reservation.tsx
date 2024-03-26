@@ -1,32 +1,56 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
 const powerImage = require('../../assets/power.png');
+import { useResidents } from "../hook/useResident";
+import {auth, db} from "../config/firebase";
+import {doc, getDoc} from "firebase/firestore";
 
 // @ts-ignore
 const Reservation = ({ navigation }) => {
     const [timeSlot, setTimeSlot] = useState('');
+    const { residents } = useResidents();
+    // @ts-ignore
+
+    const fetchUserCoins = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                let userCoins = userData?.coins || 0;
+                userCoins ++;
+            }
+        }
+    };
+
     // @ts-ignore
     const HanderNavigateToConfirmationPage = (timeSlot) => {
-        if (!timeSlot) {
-            // Case 1: No time slot selected
-            alert("Please select a time slot.");
-        }
-        else {
-            Alert.alert(
-                "Confirmation",
-                `You selected ${timeSlot}. Do you want to reserve for this time slot?`,
-                [
-                    {
-                        text: "No",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Yes",
-                        // @ts-ignore
-                        onPress: () => navigation.navigate("ConfirmationPage")
-                    }
-                ]
-            );
+        const currentUser = residents.find(resident => resident.id === auth.currentUser?.uid);
+        if (!currentUser || currentUser.equipmentCount === 0) {
+            // The resident has no equipment
+            alert("Vous n'avez pas d'équipement, veuillez en ajouter pour réserver un créneau.")
+        } else {
+            if (!timeSlot) {
+                // Case 1: No time slot selected
+                alert("Please select a time slot.");
+            } else {
+                Alert.alert(
+                    "Confirmation",
+                    `You selected ${timeSlot}. Do you want to reserve for this time slot?`,
+                    [
+                        {
+                            text: "No",
+                            style: "cancel"
+                        },
+                        {
+                            text: "Yes",
+                            // @ts-ignore
+                            onPress: () => navigation.navigate("ConfirmationPage")
+                        }
+                    ]
+                );
+            }
         }
     }
 
