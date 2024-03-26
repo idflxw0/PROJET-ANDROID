@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {auth} from "../config/firebase";
 //@ts-ignore
 const MesPref = ({ navigation }) => {
+    const handleSignOut = () => {
+        auth.signOut().then(() => {
+            navigation.navigate('LandingPage');
+        }).catch((error) => {
+            console.error("Sign out error:", error);
+        });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Vos préférences</Text>
@@ -34,6 +43,10 @@ const MesPref = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.item} onPress={() => {/* navigate to your account screen */}}>
                 <Text style={styles.text}>Aide</Text>
+                <Icon name="chevron-forward-outline" size={20} color="grey" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.item} onPress={handleSignOut}>
+                <Text style={styles.text}>Se Déconnecter</Text>
                 <Icon name="chevron-forward-outline" size={20} color="grey" />
             </TouchableOpacity>
         </View>

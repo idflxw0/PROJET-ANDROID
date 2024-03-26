@@ -121,13 +121,7 @@ const ModifProfile = ({ navigation }) => {
             });
         }
     };
-    const handleSignOut = () => {
-        auth.signOut().then(() => {
-            navigation.navigate('LandingPage');
-        }).catch((error) => {
-            console.error("Sign out error:", error);
-        });
-    };
+
 
     const handleSaveProfile = async () => {
         const user = auth.currentUser;
