@@ -34,7 +34,7 @@ const ConfirmationPage = ({ navigation }) => {
                 <Ionicons name="checkmark-circle" size={150} color="#007AFF" style={styles.blueShadow} />
             </View>
             <Text style={styles.message}>
-                Nous vous tiendrons informé de la situation au plus vite.
+                Nous vous tiendrons informé de la situation au plus vite. Vous venez de gagner 1 éco-coin !
             </Text>
             <TouchableOpacity style={styles.button} onPress={HanderNavigateToHome}>
                 <Text style={styles.buttonText}>RETOUR</Text>
