@@ -43,16 +43,15 @@ const LDH = () => {
                     <Text style={styles.headerItem}>Résident</Text>
                     <Text style={styles.headerItem}>Nb équipements</Text>
                 </View>
-
-                <ScrollView style={styles.equipmentScrollView}>
-                    {residents.map((resident, index) => (
-                        <View key={index} style={styles.equipmentEntry}>
-                            <Text style={styles.equipmentItem}>{resident.name}</Text>
-                            <Text style={styles.equipmentItem}>{resident.equipmentCount}</Text>
-                        </View>
-                    ))}
-                </ScrollView>
             </View>
+            <ScrollView style={styles.equipmentScrollView}>
+                {residents.map((resident, index) => (
+                    <View key={index} style={styles.equipmentEntry}>
+                        <Text style={styles.equipmentItem}>{resident.name}</Text>
+                        <Text style={styles.equipmentItem}>{resident.equipmentCount}</Text>
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 };

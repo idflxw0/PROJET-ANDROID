@@ -29,6 +29,12 @@ const equipmentImages: { [key: string]: any } = {
     'Machine à laver': require('../../assets/machine_a_laver.png'),
 };
 
+const equipmentDefaultPower: { [key: string]: number } = {
+    'Aspirateur': 200,
+    'Climatiseur': 300,
+    'Fer à repasser': 150,
+    'Machine à laver': 400,
+};
 const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -147,7 +153,8 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const pickImage = (image: string) => {
         // @ts-ignore
         const nom = Object.keys(equipmentImages).find(key => equipmentImages[key] === image) || '';
-        setNewEquipment({ ...newEquipment, image, nom });
+        const puissance = equipmentDefaultPower[nom] || 0;
+        setNewEquipment({ ...newEquipment, image, nom, puissance });
     };
 
     const totalPower = equipmentData.reduce((sum, equipment) => sum + equipment.puissance, 0);

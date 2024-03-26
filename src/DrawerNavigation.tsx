@@ -29,7 +29,7 @@ type IconMap = {
 
 
 const ICONS_MAP: IconMap = {
-    'Acceuil': { library: Ionicons, name: 'home-outline' },
+    'Accueil': { library: Ionicons, name: 'home-outline' },
     'Liste des habitants': { library: Foundation, name: 'clipboard-notes' },
     'Mon habitat': { library: FontAwesome6, name: 'house-user' },
     'Notification': { library: Ionicons, name: "notifications-outline" },
@@ -38,7 +38,7 @@ const ICONS_MAP: IconMap = {
 };
 const DrawerNavigation = () => {
     return (
-        <Drawer.Navigator initialRouteName='Acceuil'
+        <Drawer.Navigator initialRouteName='Accueil'
                           drawerContent={(props) => <CustomDrawerContent {...props}/>}
                           screenOptions={{
                               drawerStyle: {
@@ -48,7 +48,7 @@ const DrawerNavigation = () => {
                           }}
         >
 
-            <Drawer.Screen name='Acceuil' component={HomePage} options={{ headerTitle:'', headerTransparent: true,
+            <Drawer.Screen name='Accueil' component={HomePage} options={{ headerTitle:'', headerTransparent: true,
                 drawerActiveBackgroundColor: '#4287F5',
                 drawerActiveTintColor: '#fff',
                 drawerInactiveBackgroundColor: 'transparent'}}/>
