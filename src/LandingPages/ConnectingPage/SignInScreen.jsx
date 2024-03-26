@@ -1,19 +1,46 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from expo/vector-icons
 import Header from '../../components/Header';
 import CustomButton from "../../components/CustomButton";
 import {LinearGradient} from "expo-linear-gradient";
-import { auth,loginUser,db} from '../../config/firebase';
+import { auth,loginUser} from '../../config/firebase';
+import { GoogleAuthProvider,
+    signInWithCredential,
+    onAuthStateChanged} from 'firebase/auth';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-
+    const [request,response,promptAsyn] = Google.useAuthRequest({
+        webClientId: '640023812885-bcupupo5m0j4j8otdou60aac689benk6.apps.googleusercontent.com',
+        androidClientId: '640023812885-3rhielb66921mil65ikmfahra5rr7jp7.apps.googleusercontent.com',
+    });
     const handlePasswordForgot = () => {
         navigation.navigate('ForgotPassword');
     }
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { id_token } = response.params;
+            const credential = GoogleAuthProvider.credential(id_token);
+            signInWithCredential(auth, credential)
+                .then((userCredential) => {
+                    navigation.navigate('Home');
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    const email = error.email;
+                    const credential = GoogleAuthProvider.credentialFromError(error);
+                    Alert.alert("Login Failed", errorMessage);
+                });
+        }
+    }, [response]);
 
     const handleSignIn = () => {
     loginUser(auth, email, password)
@@ -23,10 +50,9 @@ const SignInScreen = ({ navigation }) => {
             }, 100);
         })
         .catch((error) => {
-            // There was an error signing in the user
             console.error('Error signing in:', error);
         });
-};
+    };
 
     function togglePasswordVisibility() {
         setShowPassword(!showPassword);
@@ -63,7 +89,7 @@ const SignInScreen = ({ navigation }) => {
 
             <Text style={styles.orText}>Or with</Text>
 
-            <TouchableOpacity style={styles.corporateButton} onPress={handleSignIn}>
+            <TouchableOpacity style={styles.corporateButton} onPress={()=>promptAsyn()}>
                 <Image
                     source={require('../../../assets/LandingImages/google.png')}
                     style={styles.logoImageStyle}
