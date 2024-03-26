@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import {createDrawerNavigator} from "@react-navigation/drawer";
 
 //Screens
+import splashScreen from "./src/Screens/splashScreen";
+
 import LandingPage from "./src/LandingPages/LandingPage";
 import SignInScreen from "./src/LandingPages/ConnectingPage/SignInScreen";
 import SignUp from "./src/LandingPages/ConnectingPage/SignUp";
@@ -34,7 +36,8 @@ export default function App() {
     </NavigationContainer>*/
 
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="LandingPage">
+        <Stack.Navigator initialRouteName="splashScreen">
+            <Stack.Screen name="SplashScreen" component={splashScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }}/>
             <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false, gestureEnabled: false }}/>
             <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false, gestureEnabled: false }}/>
