@@ -34,10 +34,6 @@ const SignInScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <LinearGradient
-                colors={['#B7FFB1', '#1aff00']}
-                style={styles.background}
-            />
             <Header title={'Log in'} navigation={navigation}></Header>
             <TextInput
                 style={styles.input}
@@ -100,7 +96,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'flex-start',
-        backgroundColor: '#30363D', // Background color grading
+        backgroundColor: '#95E1D3', // Background color grading
         paddingTop: 50,
         paddingHorizontal: 20,
     },

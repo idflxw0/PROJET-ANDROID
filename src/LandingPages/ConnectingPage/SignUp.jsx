@@ -115,10 +115,7 @@ const SignUpScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <LinearGradient
-                colors={['#b1fcff', '#2ccff4']}
-                style={styles.background}
-            />
+
             <Header title={"Sign up"} navigation={navigation}></Header>
 
             <CustomInput inputType={"Name"} value={name} setValue={setName} />
@@ -174,7 +171,7 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         justifyContent: 'flex-start',
-        backgroundColor: 'transparent',
+        backgroundColor: '#95E1D3',
         paddingTop: 50,
         paddingHorizontal: 20,
     },

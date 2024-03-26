@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#95E1D3',
     },
     scrollViewContent: {
         alignItems: 'center',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     loginButton: {
-        backgroundColor: '#58BB46',
+        backgroundColor: '#34495E',
         paddingVertical: 10,
         paddingHorizontal: 30,
         borderRadius: 30,
@@ -101,11 +101,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     signUpButton: {
-        backgroundColor: '#0247C5',
+        backgroundColor: '#F39C12',
         paddingVertical: 10,
         paddingHorizontal: 30,
         borderRadius: 30,
-        marginBottom: 10,
+        marginBottom: '15%',
         width: '90%',
     },
     buttonText: {
