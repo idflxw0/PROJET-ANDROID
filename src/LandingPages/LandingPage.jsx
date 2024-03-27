@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: '-2.2%',
+        bottom: '-4%',
         left: 0,
         right: 0,
         alignItems: 'center',
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 30,
         borderRadius: 30,
-        marginBottom: '15%',
+        marginBottom: '10%',
         width: '90%',
     },
     buttonText: {

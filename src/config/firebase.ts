@@ -1,13 +1,16 @@
 import { initializeApp,getApps, FirebaseApp} from 'firebase/app';
 import 'firebase/firestore';
-// @ts-ignore
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+} from 'firebase/auth';
 import {getFirestore } from "firebase/firestore";
 
-import constants from 'expo-constants';
-import { initializeAuth } from 'firebase/auth';
-import AsyncStorage from "@react-native-async-storage/async-storage"
 
+
+//android : 640023812885-3rhielb66921mil65ikmfahra5rr7jp7.apps.googleusercontent.com
 const configuration = {
     apiKey: process.env.EXPO_PUBLIC_API_KEY,
     authDomain: process.env.EXPO_PUBLIC_AUTH_DOMAIN,
@@ -30,3 +33,4 @@ export const db = getFirestore(firebaseApp);
 export const createUser = createUserWithEmailAndPassword;
 export const loginUser = signInWithEmailAndPassword;
 export const signOutUser = signOut;
+

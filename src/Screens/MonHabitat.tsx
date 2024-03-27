@@ -37,6 +37,23 @@ const equipmentDefaultPower: { [key: string]: number } = {
     'Machine à laver': 400,
 };
 
+const modifyTimeSlot = async (newTimeSlot: string) => {
+    try {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, {
+                TimeSlot: newTimeSlot
+            });
+        } else {
+            alert('No authenticated user found.');
+        }
+    } catch (error) {
+        console.error("Error updating time slot in Firestore:", error);
+        alert('Error updating time slot in Firestore.');
+    }
+};
+
 
 
 
