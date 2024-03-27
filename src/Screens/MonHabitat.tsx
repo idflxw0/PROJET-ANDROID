@@ -37,31 +37,7 @@ const equipmentDefaultPower: { [key: string]: number } = {
     'Machine à laver': 400,
 };
 
-const initialTimeSlot = "9h-10h";
-const timeSlots = ["9h-10h", "10h-11h", "11h-12h", "12h-13h", "13h-14h", "14h-15h", "15h-16h", "16h-17h", "17h-18h", "18h-19h", "19h-20h", "20h-21h", "21h-22h"];
-const modifyTimeSlot = async (newTimeSlot: string) => {
-    try {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, {
-                TimeSlot: newTimeSlot
-            });
-        } else {
-            alert('No authenticated user found.');
-        }
-    } catch (error) {
-        console.error("Error updating time slot in Firestore:", error);
-        alert('Error updating time slot in Firestore.');
-    }
-};
 
-// @ts-ignore
-const TimeSlotButton = ({ timeSlot, handleModifyTimeSlot }) => (
-    <TouchableOpacity style={styles.timeSlotButton} onPress={() => handleModifyTimeSlot(timeSlot)}>
-        <Text style={styles.timeSlotButtonText}>{timeSlot}</Text>
-    </TouchableOpacity>
-);
 
 
 const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
@@ -69,11 +45,9 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [newEquipment, setNewEquipment] = useState<Equipment>({ id: 0, nom: '', image: null, puissance: 0 });
     const [coins, setCoins] = useState(initialCoins);
-    const [timeslot, setTimeslot] = useState(initialTimeSlot);
     const { residents, loading, error, refresh } = useResidents();
+    const [timeSlot, setTimeSlot] = useState('');
 
-    // Add a new state variable for the "Modify Time Slot" modal visibility
-    const [modifyTimeSlotModalVisible, setModifyTimeSlotModalVisible] = useState(false);
 
 
 
@@ -89,6 +63,32 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
             }
         }
     };
+    const fetchTimeSlotForDate = async () => {
+        try {
+            const selectedDate = new Date().toISOString().substring(0, 10);
+            const user = auth.currentUser;
+            if (user) {
+                const reservationRef = collection(db, "users", user.uid, "Reservasions");
+                const q = query(reservationRef, where("date", "==", selectedDate));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const reservationData = querySnapshot.docs[0].data();
+                    const timeSlot = reservationData.timeSlot;
+                    setTimeSlot(timeSlot);
+                    console.log(timeSlot);
+                } else {
+                    setTimeSlot("Time slot not found");
+                    console.log(timeSlot);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching time slot for today:", error);
+        }
+    };
+    useEffect(() => {
+        fetchTimeSlotForDate();
+    });
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             fetchUserCoins();
@@ -96,18 +96,7 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
 
         return unsubscribe;
     }, [navigation, db]);
-    const fetchUserTimeSlot = async () => {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userRef);
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const userTimeSlot = userData?.TimeSlot || 0;
-                setTimeslot(userTimeSlot);
-            }
-        }
-    };
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             refresh();
@@ -116,11 +105,11 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
         return unsubscribe;
     }, [navigation, refresh]);
 
-    const handleModifyTimeSlot = (newTimeSlot: string) => {
-        modifyTimeSlot(newTimeSlot);
-        setTimeslot(newTimeSlot);
-        setModifyTimeSlotModalVisible(false);
-    };
+    const handleModifyTime = () => {
+        const selectedDate = new Date().toISOString().substring(0, 10);
+        navigation.navigate("Reservation", { selectedDate });
+    }
+
 
     useEffect(() => {
         const fetchEquipmentData = async () => {
@@ -237,6 +226,7 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
         fetchUserCoins();
     }, [db]);
 
+
     return (
         <View style={styles.container}>
 
@@ -268,29 +258,8 @@ const MonHabitat = ({ navigation }: { navigation: NavigationProp }) => {
                         </TouchableOpacity>
 
                     </View>
-                    <Text style={styles.timeSlotText}>Time Slot: {timeslot}</Text>
-                    <Button title="Modifier Time Slot" onPress={() => setModifyTimeSlotModalVisible(true)} />
-
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modifyTimeSlotModalVisible}
-                        onRequestClose={() => {
-                            setModifyTimeSlotModalVisible(!modifyTimeSlotModalVisible);
-                        }}
-                    >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}>Selectionner un horaire</Text>
-                                {/* Add a new View component with a flexWrap style */}
-                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                                    {timeSlots.map(timeSlot => (
-                                        <TimeSlotButton key={timeSlot} timeSlot={timeSlot} handleModifyTimeSlot={handleModifyTimeSlot} />
-                                    ))}
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                    <Text style={styles.timeSlotText}>Time Slot: {timeSlot}</Text>
+                    <Button title="Modifier Time Slot" onPress={handleModifyTime} />
                 </View>
             </View>
             <View style={styles.equipmentHeader}>

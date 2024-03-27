@@ -4,13 +4,16 @@ import { Calendar } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import { useResidents } from "../hook/useResident";
-import { db } from "../config/firebase";
-import { collection, getDocs, query } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
+import {addDoc, collection, getDocs, query} from "firebase/firestore";
+import firebase from "firebase/compat";
 
 const HomePage = () => {
     const navigation = useNavigation();
     const { residents, totalPower, loading, error, refresh } = useResidents();
     const [selectedDate, setSelectedDate] = useState('');
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -21,6 +24,7 @@ const HomePage = () => {
 
         return unsubscribe;
     }, [navigation, refresh]);
+
 
 
     // @ts-ignore
@@ -54,7 +58,10 @@ const HomePage = () => {
                         {
                             text: "Yes",
                             // @ts-ignore
-                            onPress: () => navigation.navigate("Reservation")
+                            onPress: () => {
+                                // @ts-ignore
+                                navigation.navigate("Reservation", { selectedDate });
+                            }
                         }
                     ]
                 );
@@ -63,12 +70,6 @@ const HomePage = () => {
     };
 
 
-
-
-    const handleNavigateToReservation = () => {
-        // @ts-ignore
-        navigation.navigate("Reservation");
-    };
 
     return (
         <View style={styles.container}>
@@ -92,7 +93,7 @@ const HomePage = () => {
                 <Calendar
                     onDayPress={handleDayPress}
                     markedDates={{
-                        '2024-03-26': { selected: true, marked: true, dotColor: 'red' }
+                        [todayString]: { selected: true, marked: true, dotColor: 'red' },
                     }}
                 />
             </View>

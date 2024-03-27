@@ -30,4 +30,3 @@ export const db = getFirestore(firebaseApp);
 export const createUser = createUserWithEmailAndPassword;
 export const loginUser = signInWithEmailAndPassword;
 export const signOutUser = signOut;
-

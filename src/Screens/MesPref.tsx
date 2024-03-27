@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, Image, Alert, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {signOut} from "firebase/auth";
 //@ts-ignore
+
 const MesPref = ({ navigation }) => {
+    const handleSignOut = async () => {
+        try {
+            await signOut; // Call the signOut method provided by Firebase Auth
+            // Navigate to the sign-in or home screen after sign-out
+            navigation.navigate('LandingPage'); // Replace 'SignIn' with the appropriate screen name
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Vos préférences</Text>
@@ -35,6 +46,10 @@ const MesPref = ({ navigation }) => {
             <TouchableOpacity style={styles.item} onPress={() => {/* navigate to your account screen */}}>
                 <Text style={styles.text}>Aide</Text>
                 <Icon name="chevron-forward-outline" size={20} color="grey" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+                <Text style={styles.signOutText}>Se déconnecter</Text>
+                <Icon name="log-out-outline" size={20} color="white" />
             </TouchableOpacity>
         </View>
     );
@@ -79,7 +94,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginRight: 3,
     },
-
+    signOutButton: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FF7E67',
+        paddingVertical: 20,
+        borderRadius: 15,
+        marginHorizontal: 15,
+        marginTop: '2%',
+    },
+    signOutText: {
+        color: 'white',
+        fontWeight: 'bold',
+        marginRight: 10,
+    },
 
 });
 

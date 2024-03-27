@@ -1,15 +1,20 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
 const powerImage = require('../../assets/power.png');
 import { useResidents } from "../hook/useResident";
 import {auth, db} from "../config/firebase";
-import {doc, getDoc} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, setDoc} from "firebase/firestore";
+import {useRoute} from "@react-navigation/native";
+import { query, where, getDocs } from "firebase/firestore";
 
 // @ts-ignore
 const Reservation = ({ navigation }) => {
     const [timeSlot, setTimeSlot] = useState('');
     const { residents } = useResidents();
+    const route = useRoute();
     // @ts-ignore
+    const { selectedDate } = route.params;    // @ts-ignore
+    const [timeSlotCounts, setTimeSlotCounts] = useState({});
 
     const fetchUserCoins = async () => {
         const user = auth.currentUser;
@@ -24,6 +29,124 @@ const Reservation = ({ navigation }) => {
         }
     };
 
+    useEffect(() => {
+        const getCounts = async () => {
+            const counts = await fetchTimeSlotCounts(selectedDate);
+            console.log("Time slot counts:", counts); // Log the counts to the console
+        };
+
+        getCounts();
+    }, [selectedDate]); // Run this effect when selectedDate changes
+
+    // @ts-ignore
+    const buttonColor = (timeSlot) => {
+        // @ts-ignore
+        const count = timeSlotCounts[timeSlot] || 0;
+        if (count >= 4) return 'red';
+        else if (count >= 1) return 'orange';
+        else return 'green';
+    };
+
+    // @ts-ignore
+    const fetchTimeSlotCounts = async (selectedDate) => {
+        const user = auth.currentUser;
+        try {
+            // @ts-ignore
+            const reservationsRef = collection(db, "users", user.uid, "Reservasions");
+            const q = query(reservationsRef, where("date", "==", selectedDate));
+            const querySnapshot = await getDocs(q);
+            const counts = {};
+
+            querySnapshot.forEach((doc) => {
+                const { timeSlot } = doc.data();
+                // @ts-ignore
+                counts[timeSlot] = (counts[timeSlot] || 0) + 1;
+            });
+
+            setTimeSlotCounts(counts);
+        } catch (error) {
+            console.error("Error fetching time slot counts:", error);
+        }
+    };
+
+    /*const saveReservationToDB = async (selectedDate: string, timeSlot: string) => {
+        const user = auth.currentUser;
+        if (user) {
+            const reservationRef = collection(db, "users", user.uid, "Reservasions");
+            const docRef = await addDoc(reservationRef, {
+                date: selectedDate,
+                timeSlot: timeSlot,
+            });
+
+            console.log("Reservation added with ID:", docRef.id);
+            return docRef.id; // Optionally return the document ID
+        }
+    };*/
+    // @ts-ignore
+    const saveReservationToDB = async (selectedDate, timeSlot) => {
+        const user = auth.currentUser;
+        if (user) {
+            const reservationRef = collection(db, "users", user.uid, "Reservasions");
+            const q = query(reservationRef, where("date", "==", selectedDate));
+
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                // Existing reservation found
+                const existingReservationId = querySnapshot.docs[0].id; // Assuming one reservation per date
+                Alert.alert(
+                    "Existing Reservation",
+                    "You already have a reservation on this date. Do you want to replace it?",
+                    [
+                        { text: "Cancel", style: "cancel" },
+                        {
+                            text: "Replace",
+                            onPress: () => {
+                                // Call to update the existing reservation
+                                console.log("Replacing existing reservation...");
+                                // @ts-ignore
+                                addOrUpdateReservation(reservationRef, selectedDate, timeSlot, existingReservationId);
+                                navigation.navigate("ConfirmationPage");
+                            }
+                        }
+                    ]
+                );
+            } else {
+                // No reservation exists, proceed to add a new one
+                addOrUpdateReservation(reservationRef, selectedDate, timeSlot);
+                navigation.navigate("ConfirmationPage");
+            }
+        }
+    };
+
+
+// Helper function to add or update a reservation
+    // @ts-ignore
+    const addOrUpdateReservation = async (reservationRef, selectedDate, timeSlot, existingReservationId = null) => {
+        if (existingReservationId) {
+            // Existing reservation ID is provided, update the document
+            const reservationDocRef = doc(reservationRef, existingReservationId);
+            await setDoc(reservationDocRef, {
+                date: selectedDate,
+                timeSlot: timeSlot,
+            }, { merge: true }); // merge true to update partially
+            console.log("Reservation updated with ID:", existingReservationId);
+        } else {
+            // No existing reservation ID, add a new document
+            const docRef = await addDoc(reservationRef, {
+                date: selectedDate,
+                timeSlot: timeSlot,
+            });
+            console.log("New reservation added with ID:", docRef.id);
+        }
+    };
+
+    const saveTimeSlotToDB = async (timeSlot: string) => {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            await setDoc(userRef, { timeSlot: timeSlot }, { merge: true });
+        }
+    };
     // @ts-ignore
     const HanderNavigateToConfirmationPage = (timeSlot) => {
         const currentUser = residents.find(resident => resident.id === auth.currentUser?.uid);
@@ -46,7 +169,10 @@ const Reservation = ({ navigation }) => {
                         {
                             text: "Yes",
                             // @ts-ignore
-                            onPress: () => navigation.navigate("ConfirmationPage")
+                            onPress: () => {
+                                console.log("Selected time slot:", selectedDate, timeSlot);
+                                saveReservationToDB(selectedDate, timeSlot);
+                            }
                         }
                     ]
                 );
@@ -85,9 +211,15 @@ const Reservation = ({ navigation }) => {
                 <Text style={styles.infoTextsqr}>Choix d’horaires moins énergivores</Text>
                 <View style={styles.timeSlotContainer}>
                     {timeSlots.map((timeSlot, index) => (
-                        <TouchableOpacity
+                        /*<TouchableOpacity
                             key={index}
                             style={styles.timeSlotButton}
+                            onPress={() => handleSelectTimeSlot(timeSlot)}>
+                            <Text style={styles.timeSlotText}>{timeSlot}</Text>
+                        </TouchableOpacity>*/
+                        <TouchableOpacity
+                            key={index}
+                            style={[styles.timeSlotButton, { backgroundColor: buttonColor(timeSlot) }]} // Use function to set color
                             onPress={() => handleSelectTimeSlot(timeSlot)}>
                             <Text style={styles.timeSlotText}>{timeSlot}</Text>
                         </TouchableOpacity>
