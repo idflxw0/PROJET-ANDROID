@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Image, Alert} from 'react-nati
 const powerImage = require('../../assets/power.png');
 import { useResidents } from "../hook/useResident";
 import {auth, db} from "../config/firebase";
-import {addDoc, collection, doc, getDoc, setDoc} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, setDoc, updateDoc} from "firebase/firestore";
 import {useRoute} from "@react-navigation/native";
 import { query, where, getDocs } from "firebase/firestore";
 
@@ -202,6 +202,7 @@ const Reservation = ({ navigation }) => {
                             // @ts-ignore
 
                             onPress: async () => {
+                                await saveReservationToDB(selectedDate,TimeSlot);
                                 const color = assignColor(TimeSlot);
                                 const user = auth.currentUser;
                                 if (user) {
