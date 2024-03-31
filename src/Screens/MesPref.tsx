@@ -113,6 +113,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
 
-});
+});nnpùm install
 
 export default MesPref;
